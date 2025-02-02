@@ -1,0 +1,10 @@
+@use "./styles/fonts.scss";
+main {
+  min-height: 100vh;
+  padding: 10px;
+  background-color: #f0efed;
+}
+
+.br-10 {
+  border-radius: 10px;
+}

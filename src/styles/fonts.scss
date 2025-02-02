@@ -1,0 +1,15 @@
+@font-face {
+  font-family: "robotoRegular";
+  src: url("src/styles/fonts/Roboto-VariableFont_wdth,wght.ttf")
+    format("truetype");
+  font-weight: 100 900; /* Define the range if it's variable */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "robotoItalic";
+  src: url("src/styles/fonts/Roboto-Italic-VariableFont_wdth,wght.ttf")
+    format("truetype");
+  font-weight: 100 900; /* Define the range if it's variable */
+  font-style: normal;
+}
