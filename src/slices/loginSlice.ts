@@ -20,12 +20,11 @@ export const login = createAsyncThunk(
   async (payload: ILoginPayload, { rejectWithValue }) => {
     try {
       const response = await axios.post(loginUrl, payload);
-      const data = response.data;
-      setCookie("auth-token", data.accessToken);
-      setCookie("userid", data.userid);
-      setCookie("username", data.username);
-      setCookie("role", data.role);
-      return data;
+      const { accessToken, userid, username, role } = response.data;
+      ["auth-token", "userid", "username", "role"].forEach((key, index) =>
+        setCookie(key, [accessToken, userid, username, role][index])
+      );
+      return response.data;
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         return rejectWithValue(error.response.data);
@@ -56,15 +55,8 @@ const loginSlice = createSlice({
   },
   reducers: {
     logout: (state) => {
-      console.log("in logout");
-      removeCookie("auth-token");
-      removeCookie("userid");
-      removeCookie("username");
-      state.loggedIn = false;
-      state["auth-token"] = undefined;
-      state.username = undefined;
-      state.userid = undefined;
-      state.role = undefined;
+      ["auth-token", "userid", "username", "role"].forEach(removeCookie);
+      Object.assign(state, initialState);
     },
   },
   extraReducers: (builder) => {
@@ -73,13 +65,14 @@ const loginSlice = createSlice({
         state.loading = true;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.loggedIn = true;
-        state.loading = false;
-        console.log("payload", action.payload);
-        state["auth-token"] = action.payload.accessToken;
-        state.username = action.payload.username;
-        state.userid = action.payload.userid;
-        state.role = action.payload.role;
+        Object.assign(state, {
+          loggedIn: true,
+          loading: false,
+          "auth-token": action.payload.accessToken,
+          username: action.payload.username,
+          userid: action.payload.userid,
+          role: action.payload.role,
+        });
       })
       .addCase(login.rejected, (state) => {
         state.loading = false;

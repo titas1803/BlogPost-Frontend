@@ -1,3 +1,4 @@
+import { processPhotoPath } from "@/Utilities/utilities";
 import React from "react";
 import { Carousel } from "react-bootstrap";
 
@@ -14,7 +15,7 @@ export const PostCarousel: React.FC<Props> = React.memo(
         {images.map((image, index) => (
           <Carousel.Item key={index}>
             <img
-              src={image}
+              src={processPhotoPath(image)}
               alt={`blogimage-${index}`}
               width={imageWidth}
               height={imageHeight}

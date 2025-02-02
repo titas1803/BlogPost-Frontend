@@ -110,11 +110,6 @@ export const DetailsForm: React.FC = () => {
     const dobMonthString = (dobMonth < 9 ? "0" : "") + (dobMonth + 1);
     const dobString =
       dobMonthString + "-" + data.dob.getDate() + "-" + data.dob.getFullYear();
-    console.log(
-      "signupdata: ",
-      data,
-      dobMonthString + "-" + data.dob.getDate() + "-" + data.dob.getFullYear()
-    );
     setDetails({
       ...data,
       dob: dobString,

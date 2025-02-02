@@ -31,6 +31,7 @@ export const ProfileCardStyle = styled.div`
       .profile-photo-img {
         width: 75px;
         height: 75px;
+        border-radius: 50%;
 
         @media ${(props) => props.theme.device.md} {
           width: 100px;

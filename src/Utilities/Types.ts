@@ -10,17 +10,24 @@ export type UserDetailsType = {
   dob: string;
 };
 
-export type FetchedUserDetailsType = {
+export interface IFetchedUserDetails {
   name: string;
-  username: string;
+  userName: string;
   email: string;
   phone: string;
   photo: string;
   gender: string;
   dob: string;
+  role: "USER" | "ADMIN";
   noOfSubscribers: number;
   noOfSubscriberedTo: number;
-};
+}
+
+export interface IUserState extends IFetchedUserDetails {
+  isLoading: boolean;
+  hasError: boolean;
+  isFetched: boolean;
+}
 
 export type PasswordType = {
   password: string;
@@ -49,4 +56,22 @@ export interface ILoginState {
 export interface ILoginPayload {
   username: string;
   password: string;
+}
+
+export interface IPost {
+  id: string;
+  title: string;
+  content: string;
+  authorId: string;
+  tags: string[];
+  categories: string[];
+  image: string[];
+  likedBy: string[];
+  isPublished: boolean;
+  commentsCount: number;
+  authorDetails: {
+    _id: string;
+    name: string;
+    userName: string;
+  };
 }

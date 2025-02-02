@@ -4,15 +4,17 @@ import defaultProfilePhoto from "@/assets/profile-user.png";
 import { Button } from "react-bootstrap";
 import { VscCopy } from "react-icons/vsc";
 import { UpdateProfileImage } from "./UpdateProfileImage";
-import { FetchedUserDetailsType } from "@/Utilities/Types";
+import { IFetchedUserDetails } from "@/Utilities/Types";
 
 type Props = {
-  userDetails: FetchedUserDetailsType;
+  userDetails: IFetchedUserDetails;
 };
 
 export const ProfileCard: React.FC<Props> = ({ userDetails }) => {
   const { profilePhoto, dob } = useMemo(() => {
-    const photo = userDetails.photo ? userDetails.photo : defaultProfilePhoto;
+    const photo = userDetails.photo
+      ? import.meta.env.BLOGPOST_FRONTEND_DB_IMAGES + userDetails.photo
+      : defaultProfilePhoto;
     const dobObject = new Date(userDetails.dob);
     const dobmonth =
       dobObject.getMonth() + 1 < 9
@@ -33,7 +35,7 @@ export const ProfileCard: React.FC<Props> = ({ userDetails }) => {
         <div className="img-div">
           <img
             src={profilePhoto}
-            alt={userDetails.username}
+            alt={userDetails.userName}
             className="profile-photo-img"
           />
           <UpdateProfileImage />
@@ -44,7 +46,7 @@ export const ProfileCard: React.FC<Props> = ({ userDetails }) => {
           <h3 className="name-text">{userDetails.name}</h3>
         </div>
         <div className="profile-username d-flex mb-2">
-          <p className="mb-0 me-2">@{userDetails.username}</p>
+          <p className="mb-0 me-2">@{userDetails.userName}</p>
           <Button className="d-flex align-items-center">
             <VscCopy fill="black" />
           </Button>

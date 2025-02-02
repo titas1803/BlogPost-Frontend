@@ -5,68 +5,70 @@ import { Button } from "react-bootstrap";
 import { SlLike } from "react-icons/sl";
 import { FaThumbsUp } from "react-icons/fa";
 import { PostCarousel } from "./PostCarousel";
+import { IPost } from "@/Utilities/Types";
+import { Link } from "react-router-dom";
 
 type Props = {
-  postid: string;
+  post: IPost;
 };
 
-const demoPost = {
-  title: "Post title",
-  content:
-    "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Similique nihil laboriosam vero nesciunt autem error. Dolor asperiores excepturi eaque qui, cum doloremque impedit odit mollitia iusto expedita voluptatibus at consequuntur.",
-  authorId: "abcd",
-  authorName: "abcd efgh",
-  tags: ["#adventure, #travel"],
-  image: [
-    "https://images.pexels.com/photos/4753649/pexels-photo-4753649.jpeg",
-    "https://images.pexels.com/photos/6588412/pexels-photo-6588412.jpeg",
-  ],
-  likedBy: ["cdef", "shg", "asdff"],
-  commentsCount: "20",
-};
-
-export const ViewPost: React.FC<Props> = ({ postid }) => {
+export const ViewPost: React.FC<Props> = ({ post }) => {
   const [liked, setLiked] = useState(false);
   return (
     <ViewPostStyles className="d-block d-md-flex p-4 br-10">
-      <PostCarousel
-        images={demoPost.image}
-        imageHeight={400}
-        imageWidth={400}
-        className="me-3 d-none d-md-block"
-      />
+      {post.image.length ? (
+        <PostCarousel
+          images={post.image}
+          imageHeight={400}
+          imageWidth={400}
+          className="me-3 d-none d-md-block"
+        />
+      ) : (
+        <></>
+      )}
       <div>
         <article>
           <section>
-            <p>
-              <strong>{demoPost.authorName}</strong>
-            </p>
-            <h3>{demoPost.title}</h3>
-            <p>{demoPost.content}</p>
+            <div className="userdetails">
+              <p className="mb-0">
+                <Link to={`/profile/${post.authorDetails._id}`}>
+                  <strong>{post.authorDetails.name}</strong>
+                </Link>
+              </p>
+              <p>
+                <Link to={`/profile/${post.authorDetails._id}`}>
+                  <small>@{post.authorDetails.userName}</small>
+                </Link>
+              </p>
+            </div>
+            <h3>{post.title}</h3>
+            <p>{post.content}</p>
           </section>
-          <PostCarousel
-            images={demoPost.image}
-            imageHeight={250}
-            imageWidth={250}
-            className="mt-2 mx-auto d-block d-md-none"
-          />
+          {post.image.length ? (
+            <PostCarousel
+              images={post.image}
+              imageHeight={400}
+              imageWidth={400}
+              className="me-3 d-block d-md-none"
+            />
+          ) : (
+            <></>
+          )}
           <div className="d-flex justify-content-between">
             <div>
               <Button variant="outline-light" onClick={() => setLiked(!liked)}>
                 {liked ? <FaThumbsUp color="blue" /> : <SlLike fill="blue" />}
               </Button>{" "}
-              <span>liked by {demoPost.likedBy.length} people</span>
+              <span>liked by {post.likedBy.length} people</span>
             </div>
             <p>
-              <Button variant="link">
-                {parseInt(demoPost.commentsCount)} comments
-              </Button>
+              <Button variant="link">{post.commentsCount} comments</Button>
             </p>
           </div>
         </article>
         <section>
           <div>comments</div>
-          <AddComment postid={postid} />
+          <AddComment postid={post.id} />
         </section>
       </div>
     </ViewPostStyles>

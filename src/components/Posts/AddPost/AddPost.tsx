@@ -7,10 +7,12 @@ import { FaPenNib } from "react-icons/fa";
 import { mixed, string as yupString, object as yupObject } from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ILoginState } from "@/Utilities/Types";
-import { useSelector } from "react-redux";
-import axios from "axios";
+import { ILoginState, IUserState } from "@/Utilities/Types";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { processProfilePhotoPath } from "@/Utilities/utilities";
+import { fetchInitialuserDetails } from "@/slices/userSlice";
+import { AppDispatch } from "@/store/store";
 
 const maxFileSize = 2 * 1024 * 1024; // 2 MB
 const allowedFileTypes = ["image/jpeg", "image/png", "image/gif"];
@@ -62,34 +64,24 @@ export const AddPost: React.FC = () => {
   const [addingImages, setAddingImages] = useState(false);
   const addImageRef = useRef<HTMLInputElement>(null);
   const [userPhoto, setUserPhoto] = useState<string>("");
+  const dispatch = useDispatch<AppDispatch>();
 
-  const { username, "auth-token": authToken } = useSelector(
+  const { username } = useSelector(
     (state: { login: ILoginState }) => state.login
   );
 
-  useEffect(() => {
-    const fetchUserPhoto = async () => {
-      try {
-        const response = await axios.get(
-          import.meta.env.BLOGPOST_FRONTEND_API_URL + "/user/photo",
-          {
-            headers: {
-              authorization: `Bearer ${authToken}`,
-            },
-          }
-        );
-        const fetchedUserPhoto = response.data.photo
-          ? import.meta.env.BLOGPOST_FRONTEND_DB_IMAGES + response.data.photo
-          : "/src/assets/profile-user.png";
-        console.log("photo", response.data, fetchedUserPhoto);
-        setUserPhoto(fetchedUserPhoto);
-      } catch (error) {
-        console.error("Error fetching user photo:", error);
-      }
-    };
+  const { isFetched, photo } = useSelector(
+    (state: { user: IUserState }) => state.user
+  );
 
-    fetchUserPhoto();
-  }, [authToken]);
+  useEffect(() => {
+    if (isFetched) {
+      setUserPhoto(processProfilePhotoPath(photo));
+      return;
+    }
+
+    dispatch(fetchInitialuserDetails());
+  }, [dispatch, isFetched, photo]);
 
   const addImageClick = () => {
     addImageRef.current?.click();

@@ -17,7 +17,7 @@ import { IoMdLogOut } from "react-icons/io";
 import { logout } from "@/slices/loginSlice";
 
 export const Header: React.FC = () => {
-  const { loggedIn, username, userid } = useSelector(
+  const { loggedIn, username } = useSelector(
     (state: { login: ILoginState }) => state.login
   );
 
@@ -49,7 +49,7 @@ export const Header: React.FC = () => {
 
                   <Dropdown.Menu>
                     <Dropdown.Item as="li">
-                      <Link to={`/profile/${userid}`}>Profile</Link>
+                      <Link to="/profile">Profile</Link>
                     </Dropdown.Item>
                     <Dropdown.Item
                       as="button"

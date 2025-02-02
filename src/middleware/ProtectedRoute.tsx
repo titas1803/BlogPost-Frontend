@@ -14,13 +14,6 @@ export const ProtectedRoute: React.FC<Props> = ({ requiredRole = "USER" }) => {
     (state: { login: ILoginState }) => state.login
   );
 
-  console.log(
-    loggedIn,
-    location.pathname,
-    location.pathname.split("/", 2).pop(),
-    userRole
-  );
-
   if (!loggedIn) {
     return (
       <Navigate to={`/login?from=${location.pathname.split("/", 2).pop()}`} />

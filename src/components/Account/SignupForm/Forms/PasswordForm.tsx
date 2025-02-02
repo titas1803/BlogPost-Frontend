@@ -79,26 +79,29 @@ export const PasswordForm: React.FC = () => {
       gender: details.gender,
       password: data.password,
     };
-    const response = await axios
-      .post(
-        import.meta.env.BLOGPOST_FRONTEND_API_URL + "/user/createUser",
-        formData
-      )
-      .catch((error) => {
-        setIsSubmitting({
-          isSubmitting: false,
-          message: "",
-          className: "",
+    try {
+      await axios
+        .post(
+          import.meta.env.BLOGPOST_FRONTEND_API_URL + "/user/createUser",
+          formData
+        )
+        .catch((error) => {
+          setIsSubmitting({
+            isSubmitting: false,
+            message: "",
+            className: "",
+          });
+          return error;
         });
-        return error;
+      reset();
+      setIsSubmitting({
+        isSubmitting: false,
+        message: "",
+        className: "",
       });
-    console.log(formData, response.data?.username);
-    reset();
-    setIsSubmitting({
-      isSubmitting: false,
-      message: "",
-      className: "",
-    });
+    } catch (error) {
+      console.log(error);
+    }
     navigate(`/login?${searchParams}`);
   };
 

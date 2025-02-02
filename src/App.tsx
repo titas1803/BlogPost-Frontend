@@ -24,7 +24,10 @@ function App() {
                 <Route element={<ProtectedRoute />}>
                   <Route path="/" element={<Home />} />
                   <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/profile/:userid" element={<ProfilePage />} />
+                  <Route
+                    path="/profile/:userid"
+                    element={<ProfilePage hasId />}
+                  />
                 </Route>
                 <Route
                   path="/login"

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ProfilePageStyle } from "./style";
 import {
   ProfileCard,
@@ -7,54 +7,78 @@ import {
 } from "@/components/ProfilePageComps";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { FetchedUserDetailsType, ILoginState } from "@/Utilities/Types";
-import { useSelector } from "react-redux";
+import {
+  IFetchedUserDetails,
+  ILoginState,
+  IUserState,
+} from "@/Utilities/Types";
+import { useDispatch, useSelector } from "react-redux";
+import { LoadingModal } from "@/components/LoadingModal";
+import { fetchInitialuserDetails } from "@/slices/userSlice";
+import { AppDispatch } from "@/store/store";
 
-export const ProfilePage: React.FC = () => {
-  const [userDetails, setuserDetails] = useState<FetchedUserDetailsType>();
-  const { userId } = useParams<{ userId: string }>();
-  const { "auth-token": authToken } = useSelector(
-    (state: { login: ILoginState }) => state.login
+type Props = {
+  hasId?: boolean;
+};
+
+export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
+  const [userDetails, setUserDetails] = useState<IFetchedUserDetails>();
+  const { userid } = useParams<{ userid?: string }>();
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const authToken = useSelector(
+    (state: { login: ILoginState }) => state.login["auth-token"]
   );
-  const isMounted = useRef(false);
+  const loggedIsUserDetails = useSelector(
+    (state: { user: IUserState }) => state.user
+  );
 
   useEffect(() => {
-    if (isMounted.current) return;
-    isMounted.current = true;
-    const fetchUrl =
-      import.meta.env.BLOGPOST_FRONTEND_API_URL +
-      "/user/getuser" +
-      (userId ? `/${userId}` : "");
-    const fetuserDetails = async () => {
-      console.log("Called");
-      try {
-        const response = await axios.get(fetchUrl, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        if (response.data.success === true) {
-          setuserDetails(response.data.user);
-          console.log("found", response.data.user);
-        } else {
-          setuserDetails(undefined);
+    if (!hasId && loggedIsUserDetails.isFetched) {
+      setUserDetails(loggedIsUserDetails);
+    }
+  }, [loggedIsUserDetails, hasId]);
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      if (!hasId) {
+        if (!loggedIsUserDetails.isFetched) {
+          dispatch(fetchInitialuserDetails());
         }
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${import.meta.env.BLOGPOST_FRONTEND_API_URL}/user/getuser/${userid}`,
+          { headers: { Authorization: `Bearer ${authToken}` } }
+        );
+        setUserDetails(response.data.success ? response.data.user : undefined);
       } catch (error) {
-        console.log("Some error occured", error);
+        console.error("Some error occurred", error);
+        setUserDetails(undefined);
+      } finally {
+        setLoading(false);
       }
     };
-    fetuserDetails();
-  }, [authToken, userId]);
+
+    fetchUserDetails();
+  }, [authToken, userid, dispatch, loggedIsUserDetails.isFetched, hasId]);
 
   return (
     <ProfilePageStyle className="profile-page br-10 p-2 p-md-3">
-      {!userDetails ? (
+      {loading ? (
+        <LoadingModal show message="Loading.." />
+      ) : !userDetails ? (
         <p>404. Details not found.</p>
       ) : (
         <>
           <ProfilePageBanner />
           <ProfileCard userDetails={userDetails} />
-          <UsersPosts userid={userId} />
+          <UsersPosts userid={userid} />
         </>
       )}
     </ProfilePageStyle>
