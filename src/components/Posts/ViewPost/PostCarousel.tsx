@@ -11,7 +11,7 @@ type Props = {
 export const PostCarousel: React.FC<Props> = React.memo(
   ({ className, images, imageHeight, imageWidth }) => {
     return images.length ? (
-      <Carousel interval={null} className={`${className}`}>
+      <Carousel interval={null} className={`${className}`} fade slide={false}>
         {images.map((image, index) => (
           <Carousel.Item key={index}>
             <img

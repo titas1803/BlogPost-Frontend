@@ -14,6 +14,8 @@ import { object as yupObject, string as yupString } from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FormError } from "@components/FormError";
 import { passwordRegex } from "@/Utilities/constants";
+import toast from "react-hot-toast";
+import { fetchInitialuserDetails } from "@/slices/userSlice";
 
 const schema = yupObject().shape({
   loginUsername: yupString()
@@ -41,15 +43,22 @@ export const LoginForm: React.FC = () => {
   const fromUrl = searchParams.get("from");
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { loggedIn } = useSelector(
+  const { loggedIn, error } = useSelector(
     (state: { login: ILoginState }) => state.login
   );
 
   useEffect(() => {
     if (loggedIn) {
-      navigate(`/${fromUrl ?? ""}`);
+      setTimeout(() => {
+        navigate(`/${fromUrl ?? ""}`);
+      }, 1000);
+      toast.success("Login Successfull", {
+        removeDelay: 1000,
+      });
+    } else if (error) {
+      toast.error(`Login failed, Verify username or password`);
     }
-  }, [fromUrl, loggedIn, navigate]);
+  }, [fromUrl, loggedIn, navigate, error]);
 
   const {
     register,
@@ -64,11 +73,20 @@ export const LoginForm: React.FC = () => {
   const onSubmit: SubmitHandler<FieldType> = (data) => {
     dispatch(
       login({ username: data.loginUsername, password: data.loginPassword })
-    );
+    )
+      .unwrap()
+      .then(() => {
+        console.log("login");
+        dispatch(fetchInitialuserDetails());
+      });
   };
+
   return (
     <LoginFormStyle className="p-4">
       <h2 className="form-heading login-form">Log in</h2>
+      {error && (
+        <p className="danger">Login failed, Verify username or password</p>
+      )}
       <Form onSubmit={handleSubmit(onSubmit)} className="my-3">
         <div className="mb-3">
           <FloatingLabel

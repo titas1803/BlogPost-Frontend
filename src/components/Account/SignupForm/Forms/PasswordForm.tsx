@@ -12,6 +12,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { LoadingModal } from "@components/LoadingModal";
 import axios from "axios";
 import { passwordRegex } from "@/Utilities/constants";
+import toast from "react-hot-toast";
 
 const schema = yupObject().shape({
   password: yupString()
@@ -80,29 +81,29 @@ export const PasswordForm: React.FC = () => {
       password: data.password,
     };
     try {
-      await axios
-        .post(
-          import.meta.env.BLOGPOST_FRONTEND_API_URL + "/user/createUser",
-          formData
-        )
-        .catch((error) => {
-          setIsSubmitting({
-            isSubmitting: false,
-            message: "",
-            className: "",
-          });
-          return error;
-        });
+      const response = await axios.post(
+        import.meta.env.BLOGPOST_FRONTEND_API_URL + "/user/createUser",
+        formData
+      );
+      toast.success(`Welcome to BlogPost! ${response.data.username}`);
       reset();
+      navigate(`/login?${searchParams}`);
+    } catch (error) {
+      console.log(error);
+      if (axios.isAxiosError(error)) {
+        toast.error(`Error occurred, ${error.response?.data.message}`);
+      } else {
+        toast.error("An unknown error occurred");
+      }
+      console.log(error);
+    } finally {
+      setActiveFormIndex(0);
       setIsSubmitting({
         isSubmitting: false,
         message: "",
         className: "",
       });
-    } catch (error) {
-      console.log(error);
     }
-    navigate(`/login?${searchParams}`);
   };
 
   return (

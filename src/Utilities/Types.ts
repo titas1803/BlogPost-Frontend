@@ -11,6 +11,7 @@ export type UserDetailsType = {
 };
 
 export interface IFetchedUserDetails {
+  id: string;
   name: string;
   userName: string;
   email: string;
@@ -51,6 +52,7 @@ export interface ILoginState {
   username: string | undefined;
   userid: string | undefined;
   role: "ADMIN" | "USER" | undefined;
+  error: string | undefined;
 }
 
 export interface ILoginPayload {

@@ -8,3 +8,66 @@ main {
 .br-10 {
   border-radius: 10px;
 }
+
+.profile-image-modal-content {
+  max-width: 250px;
+  background-color: transparent;
+  border: 0;
+  margin: auto;
+
+  @media (min-width: 768px) {
+    max-width: 500px;
+  }
+
+  > div {
+    border: 0;
+
+    &.modal-body {
+      img {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        box-shadow: 0px 0px 23px 3px #616161;
+
+        @media (min-width: 768px) {
+          width: 400px;
+          height: 400px;
+        }
+      }
+    }
+
+    &.modal-header {
+      padding-bottom: 0;
+
+      button {
+        background-color: rgba($color: #fff, $alpha: 0.25);
+      }
+    }
+
+    &.modal-footer {
+      padding-top: 0;
+
+      button {
+        background-color: rgba($color: #fff, $alpha: 0.25);
+        font-size: 21px;
+
+        @media (min-width: 768px) {
+          font-size: 24px;
+        }
+
+        span {
+          font-size: 18px;
+        }
+
+        &:hover {
+          background-color: rgba($color: #fff, $alpha: 0.5);
+        }
+      }
+    }
+  }
+}
+
+.updateImageContent {
+  background-color: transparent;
+  border: 0;
+}

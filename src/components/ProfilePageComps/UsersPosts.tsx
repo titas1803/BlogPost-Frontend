@@ -19,6 +19,7 @@ export const UsersPosts: React.FC<Props> = ({ userid }) => {
   }, [loggedInUserId, userid]);
 
   useEffect(() => {
+    const source = axios.CancelToken.source();
     const fetchPosts = async () => {
       setLoading(true);
       try {
@@ -30,6 +31,7 @@ export const UsersPosts: React.FC<Props> = ({ userid }) => {
             headers: {
               Authorization: `Bearer ${authToken}`,
             },
+            cancelToken: source.token,
           }
         );
         const posts: IPost[] = response.data.posts;
@@ -41,6 +43,9 @@ export const UsersPosts: React.FC<Props> = ({ userid }) => {
       }
     };
     fetchPosts();
+    return () => {
+      source.cancel("Fetching Users posts cancelled");
+    };
   }, [authToken, profileUserId]);
 
   return (
@@ -48,7 +53,13 @@ export const UsersPosts: React.FC<Props> = ({ userid }) => {
       {loading ? (
         <LoadingModal show message="Posts loading" />
       ) : postsFound && postsFound.length ? (
-        <ListOfPosts listOfPosts={postsFound} />
+        <>
+          <h3 className="px-4">
+            Posts <span className="noOfPosts">({postsFound.length})</span>
+          </h3>
+          <hr />
+          <ListOfPosts listOfPosts={postsFound} />
+        </>
       ) : (
         <div>No Post found</div>
       )}

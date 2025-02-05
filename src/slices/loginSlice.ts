@@ -11,6 +11,7 @@ const initialState: ILoginState = {
   username: undefined,
   userid: undefined,
   role: undefined,
+  error: undefined,
 };
 
 const loginUrl = `${import.meta.env.BLOGPOST_FRONTEND_API_URL}/login/`;
@@ -63,6 +64,7 @@ const loginSlice = createSlice({
     builder
       .addCase(login.pending, (state) => {
         state.loading = true;
+        state.error = undefined;
       })
       .addCase(login.fulfilled, (state, action) => {
         Object.assign(state, {
@@ -72,10 +74,13 @@ const loginSlice = createSlice({
           username: action.payload.username,
           userid: action.payload.userid,
           role: action.payload.role,
+          error: undefined,
         });
       })
-      .addCase(login.rejected, (state) => {
+      .addCase(login.rejected, (state, action) => {
+        console.log(action);
         state.loading = false;
+        state.error = (action.payload as { message: string }).message;
       });
   },
 });

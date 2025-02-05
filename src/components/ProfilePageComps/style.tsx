@@ -28,14 +28,19 @@ export const ProfileCardStyle = styled.div`
       border-radius: 50%;
       width: max-content;
 
-      .profile-photo-img {
-        width: 75px;
-        height: 75px;
+      button {
         border-radius: 50%;
+        background-color: transparent;
 
-        @media ${(props) => props.theme.device.md} {
-          width: 100px;
-          height: 100px;
+        .profile-photo-img {
+          width: 75px;
+          height: 75px;
+          border-radius: 50%;
+
+          @media ${(props) => props.theme.device.md} {
+            width: 100px;
+            height: 100px;
+          }
         }
       }
     }

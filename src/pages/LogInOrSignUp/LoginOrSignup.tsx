@@ -4,6 +4,7 @@ import { Tab, Tabs } from "react-bootstrap";
 import { SignupForm } from "@components/Account/SignupForm";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { LoginOrSignupStyle } from "./styles";
+import { Toaster } from "react-hot-toast";
 
 type Props = {
   activePath: "login" | "signup";
@@ -31,6 +32,7 @@ export const LoginOrSignup: React.FC<Props> = ({ activePath }) => {
 
   return (
     <LoginOrSignupStyle className="d-flex">
+      <Toaster />
       <div className="w-100">
         <Tabs
           activeKey={tabKey}

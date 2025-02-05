@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ProfilePageStyle } from "./style";
 import {
   ProfileCard,
@@ -26,6 +26,7 @@ export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
   const { userid } = useParams<{ userid?: string }>();
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch<AppDispatch>();
+  const ref = useRef(false);
 
   const authToken = useSelector(
     (state: { login: ILoginState }) => state.login["auth-token"]
@@ -41,9 +42,28 @@ export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
   }, [loggedIsUserDetails, hasId]);
 
   useEffect(() => {
+    const isMounted = ref.current;
+    if (isMounted) {
+      return;
+    }
+    ref.current = true;
+
+    const source = axios.CancelToken.source();
     const fetchUserDetails = async () => {
+      const response = await axios.get(
+        `${import.meta.env.BLOGPOST_FRONTEND_API_URL}/user/getuser/${userid}`,
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+          cancelToken: source.token,
+        }
+      );
+      setUserDetails(response.data.success ? response.data.user : undefined);
+    };
+
+    const getUserDetails = () => {
       if (!hasId) {
         if (!loggedIsUserDetails.isFetched) {
+          console.log("profile page");
           dispatch(fetchInitialuserDetails());
         }
         setLoading(false);
@@ -51,21 +71,21 @@ export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
       }
 
       setLoading(true);
-      try {
-        const response = await axios.get(
-          `${import.meta.env.BLOGPOST_FRONTEND_API_URL}/user/getuser/${userid}`,
-          { headers: { Authorization: `Bearer ${authToken}` } }
-        );
-        setUserDetails(response.data.success ? response.data.user : undefined);
-      } catch (error) {
-        console.error("Some error occurred", error);
-        setUserDetails(undefined);
-      } finally {
-        setLoading(false);
-      }
+      fetchUserDetails()
+        .catch((error) => {
+          console.error("Some error occurred", error);
+          setUserDetails(undefined);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     };
 
-    fetchUserDetails();
+    getUserDetails();
+
+    return () => {
+      source.cancel("Fetching user details cancelled");
+    };
   }, [authToken, userid, dispatch, loggedIsUserDetails.isFetched, hasId]);
 
   return (

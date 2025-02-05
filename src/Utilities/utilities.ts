@@ -44,10 +44,29 @@ export const processPhotoPath = (path: string): string => {
     return path;
   }
 };
+
 export const processProfilePhotoPath = (path: string): string => {
   const processedpath = processPhotoPath(path);
   if (processedpath && processedpath.length > 0) {
     return processedpath;
   }
   return "/src/assets/profile-user.png";
+};
+
+export const updateProfileImage = async (
+  photoData: FormData,
+  authToken: string
+) => {
+  const response = await axios.patch(
+    import.meta.env.BLOGPOST_FRONTEND_API_URL + "/user/update/update-photo",
+    photoData,
+    {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return response;
 };

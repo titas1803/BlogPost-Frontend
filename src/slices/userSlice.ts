@@ -1,8 +1,10 @@
 import { IUserState } from "@/Utilities/Types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { logout } from "./loginSlice";
 
 const initialState: IUserState = {
+  id: "",
   isLoading: true,
   hasError: false,
   isFetched: false,
@@ -60,6 +62,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchInitialuserDetails.fulfilled, (state, action) => {
         if (action.payload.success) {
+          console.log(action.payload);
           Object.assign(state, action.payload.user, {
             isLoading: false,
             hasError: false,
@@ -71,6 +74,9 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.hasError = true;
         state.isFetched = false;
+      })
+      .addCase(logout, (state) => {
+        Object.assign(state, initialState);
       });
   },
 });

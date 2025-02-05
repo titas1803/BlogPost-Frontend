@@ -11,6 +11,7 @@ import { ProfilePage } from "./pages/ProfilePage";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { Container } from "react-bootstrap";
+import { Search } from "./pages/Search";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
                   path="/signup"
                   element={<LoginOrSignup activePath="signup" />}
                 />
+                <Route path="/search" element={<Search />} />
                 <Route path="/not-allowed" element={<NotAllowed />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

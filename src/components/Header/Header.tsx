@@ -9,7 +9,7 @@ import {
 } from "react-bootstrap";
 import logo from "/src/assets/logo/BlogPost-transparent.png";
 import { HeaderStyle } from "./styles";
-import { HeaderSearch } from "@components/Search";
+import { HeaderSearch } from "@/components/SearchComps";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ILoginState } from "@/Utilities/Types";
