@@ -56,7 +56,6 @@ const validationSchema = yupObject().shape({
       `You can only upload up to ${maxImages} images.`,
       (value) => {
         if (!value) return true;
-        console.log(value, Array.isArray(value), value.length);
         return value.length <= maxImages;
       }
     ),
@@ -109,7 +108,6 @@ export const AddPostModal: React.FC<Props> = ({ show, onHide }) => {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const filesArray = Array.from(event.target.files);
-      console.log(filesArray);
       const imageUrls = filesArray.map((file) => URL.createObjectURL(file));
       setImages((prevImages) => {
         const newimages = [...prevImages, ...imageUrls];
@@ -128,8 +126,6 @@ export const AddPostModal: React.FC<Props> = ({ show, onHide }) => {
   };
 
   const createPost: SubmitHandler<PostFields> = async (data) => {
-    console.log("data", data);
-    console.log(data.images ?? "noimage");
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("content", data.content);

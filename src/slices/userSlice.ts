@@ -38,7 +38,6 @@ export const fetchInitialuserDetails = createAsyncThunk(
         return response.data;
       }
     } catch (error) {
-      console.log(error);
       if (axios.isAxiosError(error) && error.response) {
         return rejectWithValue(error.response.data);
       }
@@ -62,7 +61,6 @@ const userSlice = createSlice({
       })
       .addCase(fetchInitialuserDetails.fulfilled, (state, action) => {
         if (action.payload.success) {
-          console.log(action.payload);
           Object.assign(state, action.payload.user, {
             isLoading: false,
             hasError: false,

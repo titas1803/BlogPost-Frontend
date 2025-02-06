@@ -27,7 +27,6 @@ export const HomeAddPost: React.FC = () => {
       setUserPhoto(processProfilePhotoPath(photo));
       return;
     }
-    console.log("add post");
     dispatch(fetchInitialuserDetails());
   }, [dispatch, isFetched, photo]);
 

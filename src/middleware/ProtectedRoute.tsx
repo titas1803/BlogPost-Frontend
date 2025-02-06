@@ -22,7 +22,6 @@ export const ProtectedRoute: React.FC<Props> = ({ requiredRole = "USER" }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    console.log("in use");
     const verifyToken = async () => {
       const TOKENVERIFYURL =
         import.meta.env.BLOGPOST_FRONTEND_API_URL + "/jwt/verify";

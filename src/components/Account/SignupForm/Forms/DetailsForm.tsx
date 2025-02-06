@@ -25,8 +25,7 @@ const usernameAvailabilityApiCall = async (
         username
     )
     .then((res) => (res.status === 200 ? res.data.available : false))
-    .catch((error) => {
-      console.log(error);
+    .catch(() => {
       return false;
     });
   if (!isAvailable && setError)

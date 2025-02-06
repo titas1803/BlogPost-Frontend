@@ -62,7 +62,6 @@ export const UpdateImageModal: React.FC<Props> = ({ show, onHide }) => {
 
       if (response.status === 200) {
         onHide();
-        console.log("updated image");
         dispatch(fetchInitialuserDetails());
       }
 

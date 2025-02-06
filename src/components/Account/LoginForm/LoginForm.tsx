@@ -76,7 +76,6 @@ export const LoginForm: React.FC = () => {
     )
       .unwrap()
       .then(() => {
-        console.log("login");
         dispatch(fetchInitialuserDetails());
       });
   };

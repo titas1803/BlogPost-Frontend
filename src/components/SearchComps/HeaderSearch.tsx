@@ -8,12 +8,8 @@ export const HeaderSearch: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const headerSearchClick = () => {
     const value = inputRef.current?.value;
-    console.log("value;: ", value);
     if (value && value.length) {
-      console.log("in if");
       navigate(`/search?keyword=${encodeURIComponent(value)}`);
-    } else {
-      console.log("in else");
     }
   };
   return (

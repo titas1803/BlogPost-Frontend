@@ -38,7 +38,6 @@ export const ProfileImage: React.FC<Props> = ({ image, alt, userId }) => {
         }
       );
       toast.success("Profile Image removed");
-      console.log("remove Image");
       dispatch(fetchInitialuserDetails());
     } catch (error) {
       if (axios.isAxiosError(error)) {

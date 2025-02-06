@@ -89,13 +89,11 @@ export const PasswordForm: React.FC = () => {
       reset();
       navigate(`/login?${searchParams}`);
     } catch (error) {
-      console.log(error);
       if (axios.isAxiosError(error)) {
         toast.error(`Error occurred, ${error.response?.data.message}`);
       } else {
         toast.error("An unknown error occurred");
       }
-      console.log(error);
     } finally {
       setActiveFormIndex(0);
       setIsSubmitting({

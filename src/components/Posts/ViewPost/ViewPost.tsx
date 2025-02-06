@@ -21,8 +21,6 @@ export const ViewPost: React.FC<Props> = ({ post }) => {
     (state: { login: ILoginState }) => state.login
   );
 
-  console.log("postid", post._id);
-
   return (
     <ViewPostStyles className="d-block d-md-flex p-4 br-10">
       {post.image.length ? (

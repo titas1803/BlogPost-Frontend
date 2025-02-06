@@ -20,7 +20,6 @@ export const DeletePostBtn: React.FC<Props> = ({
   const deletePost = async () => {
     const DELETEURL =
       import.meta.env.BLOGPOST_FRONTEND_API_URL + `/post/${postid}`;
-    console.log(postid);
     try {
       const response = await axios.delete(DELETEURL, {
         headers: {
