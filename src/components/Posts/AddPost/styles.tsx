@@ -28,3 +28,5 @@ export const AddPostStyles = styled.div`
     }
   }
 `;
+
+export const AddPostModalStyles = styled.div``;

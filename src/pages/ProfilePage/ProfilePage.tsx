@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ProfilePageStyle } from "./style";
 import {
   ProfileCard,
@@ -16,6 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { LoadingModal } from "@/components/LoadingModal";
 import { fetchInitialuserDetails } from "@/slices/userSlice";
 import { AppDispatch } from "@/store/store";
+import { Button } from "react-bootstrap";
+import { AddPostModal } from "@/components/Posts/AddPost/AddPostModal";
 
 type Props = {
   hasId?: boolean;
@@ -23,70 +25,57 @@ type Props = {
 
 export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
   const [userDetails, setUserDetails] = useState<IFetchedUserDetails>();
+  const [showAddModal, setShowModal] = useState(false);
   const { userid } = useParams<{ userid?: string }>();
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch<AppDispatch>();
-  const ref = useRef(false);
 
   const authToken = useSelector(
     (state: { login: ILoginState }) => state.login["auth-token"]
   );
-  const loggedIsUserDetails = useSelector(
+  const loggedInUserDetails = useSelector(
     (state: { user: IUserState }) => state.user
   );
 
   useEffect(() => {
-    if (!hasId && loggedIsUserDetails.isFetched) {
-      setUserDetails(loggedIsUserDetails);
-    }
-  }, [loggedIsUserDetails, hasId]);
-
-  useEffect(() => {
-    const isMounted = ref.current;
-    if (isMounted) {
+    if (!hasId && loggedInUserDetails.isFetched) {
+      setUserDetails(loggedInUserDetails);
+      setLoading(false);
       return;
     }
-    ref.current = true;
 
     const source = axios.CancelToken.source();
     const fetchUserDetails = async () => {
-      const response = await axios.get(
-        `${import.meta.env.BLOGPOST_FRONTEND_API_URL}/user/getuser/${userid}`,
-        {
-          headers: { Authorization: `Bearer ${authToken}` },
-          cancelToken: source.token,
-        }
-      );
-      setUserDetails(response.data.success ? response.data.user : undefined);
-    };
-
-    const getUserDetails = () => {
-      if (!hasId) {
-        if (!loggedIsUserDetails.isFetched) {
-          console.log("profile page");
-          dispatch(fetchInitialuserDetails());
-        }
+      try {
+        const response = await axios.get(
+          `${import.meta.env.BLOGPOST_FRONTEND_API_URL}/user/getuser/${userid}`,
+          {
+            headers: { Authorization: `Bearer ${authToken}` },
+            cancelToken: source.token,
+          }
+        );
+        setUserDetails(response.data.success ? response.data.user : undefined);
+      } catch {
+        setUserDetails(undefined);
+      } finally {
         setLoading(false);
-        return;
       }
-
-      setLoading(true);
-      fetchUserDetails()
-        .catch((error) => {
-          console.error("Some error occurred", error);
-          setUserDetails(undefined);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
     };
 
-    getUserDetails();
+    if (hasId) {
+      setLoading(true);
+      fetchUserDetails();
+    } else if (!loggedInUserDetails.isFetched) {
+      dispatch(fetchInitialuserDetails());
+      setLoading(false);
+    }
 
     return () => {
       source.cancel("Fetching user details cancelled");
     };
-  }, [authToken, userid, dispatch, loggedIsUserDetails.isFetched, hasId]);
+  }, [authToken, userid, dispatch, hasId, loggedInUserDetails]);
+
+  const onModalHide = () => setShowModal(false);
 
   return (
     <ProfilePageStyle className="profile-page br-10 p-2 p-md-3">
@@ -98,6 +87,14 @@ export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
         <>
           <ProfilePageBanner />
           <ProfileCard userDetails={userDetails} />
+          {(!hasId || (hasId && loggedInUserDetails.id === userid)) && (
+            <>
+              <Button id="add-post-profile" onClick={() => setShowModal(true)}>
+                Add BlogPost
+              </Button>
+              <AddPostModal show={showAddModal} onHide={onModalHide} />
+            </>
+          )}
           <UsersPosts userid={userid} />
         </>
       )}

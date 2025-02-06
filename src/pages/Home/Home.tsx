@@ -1,5 +1,5 @@
 import React from "react";
-import { AddPost, ViewPost } from "@components/Posts";
+import { HomeAddPost, ViewPost } from "@components/Posts";
 import { HomeStyle } from "./styles";
 
 const demoPost = {
@@ -25,7 +25,7 @@ const demoPost = {
 export const Home: React.FC = () => {
   return (
     <HomeStyle className="mx-auto">
-      <AddPost />
+      <HomeAddPost />
       <ViewPost post={demoPost} />
     </HomeStyle>
   );

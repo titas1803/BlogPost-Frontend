@@ -1,18 +1,29 @@
-import React, { useEffect, useRef, useState } from "react";
-import { AddPostStyles } from "./styles";
-import { Button, Carousel, FloatingLabel, Form, Modal } from "react-bootstrap";
-import { IoIosCloseCircleOutline, IoIosImages } from "react-icons/io";
-import AddImg from "/src/assets/icons8-plus-128.png";
-import { FaPenNib } from "react-icons/fa";
-import { mixed, string as yupString, object as yupObject } from "yup";
-import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ILoginState, IUserState } from "@/Utilities/Types";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { processProfilePhotoPath } from "@/Utilities/utilities";
-import { fetchInitialuserDetails } from "@/slices/userSlice";
-import { AppDispatch } from "@/store/store";
+import React, { useRef, useState } from "react";
+import { Modal, FloatingLabel, Carousel, Button, Form } from "react-bootstrap";
+import { FieldErrors, SubmitHandler, useForm } from "react-hook-form";
+import { FaPenNib } from "react-icons/fa";
+import { IoIosCloseCircleOutline, IoIosImages } from "react-icons/io";
+import { mixed, string as yupString, object as yupObject } from "yup";
+import AddImg from "/src/assets/icons8-plus-128.png";
+import { AddPostModalStyles } from "./styles";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { ILoginState } from "@/Utilities/Types";
+import toast from "react-hot-toast";
+
+type Props = {
+  show: boolean;
+  onHide: () => void;
+};
+
+type PostFields = {
+  title: string;
+  content: string;
+  images?: FileList;
+  tags?: string;
+  categories?: string;
+};
 
 const maxFileSize = 2 * 1024 * 1024; // 2 MB
 const allowedFileTypes = ["image/jpeg", "image/png", "image/gif"];
@@ -45,64 +56,34 @@ const validationSchema = yupObject().shape({
       `You can only upload up to ${maxImages} images.`,
       (value) => {
         if (!value) return true;
-        return Array.isArray(value) && value.length <= maxImages;
+        console.log(value, Array.isArray(value), value.length);
+        return value.length <= maxImages;
       }
     ),
 });
 
-type PostFields = {
-  title: string;
-  content: string;
-  images?: FileList;
-  tags?: string;
-  categories?: string;
-};
-
-export const AddPost: React.FC = () => {
-  const [showModal, setShowModal] = useState(false);
+export const AddPostModal: React.FC<Props> = ({ show, onHide }) => {
   const [images, setImages] = useState<Array<string>>([]);
   const [addingImages, setAddingImages] = useState(false);
   const addImageRef = useRef<HTMLInputElement>(null);
-  const [userPhoto, setUserPhoto] = useState<string>("");
-  const dispatch = useDispatch<AppDispatch>();
 
-  const { username } = useSelector(
+  const { register, setValue, getValues, handleSubmit, reset } =
+    useForm<PostFields>({
+      mode: "all",
+      reValidateMode: "onChange",
+      resolver: yupResolver(validationSchema),
+    });
+
+  const { "auth-token": authToken } = useSelector(
     (state: { login: ILoginState }) => state.login
   );
-
-  const { isFetched, photo } = useSelector(
-    (state: { user: IUserState }) => state.user
-  );
-
-  useEffect(() => {
-    if (isFetched) {
-      setUserPhoto(processProfilePhotoPath(photo));
-      return;
-    }
-    console.log("add post");
-    dispatch(fetchInitialuserDetails());
-  }, [dispatch, isFetched, photo]);
-
-  const addImageClick = () => {
-    addImageRef.current?.click();
-  };
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const filesArray = Array.from(event.target.files);
-      const imageUrls = filesArray.map((file) => URL.createObjectURL(file));
-      setImages((prevImages) => {
-        const newimages = [...prevImages, ...imageUrls];
-        setValue("images", event.target.files ?? undefined);
-        return newimages;
-      });
-    }
-  };
 
   const removeAllImages = () => {
     setImages([]);
     setValue("images", undefined);
     setAddingImages(false);
   };
+
   const removeImage = (index: number) => {
     const updatedFiles = new DataTransfer();
     const currentFiles = addImageRef.current?.files;
@@ -121,40 +102,83 @@ export const AddPost: React.FC = () => {
     }
   };
 
-  const modalShow = () => {
-    setShowModal(true);
-  };
-  const modalHide = () => {
-    setShowModal(false);
+  const addImageClick = () => {
+    addImageRef.current?.click();
   };
 
-  const { register, setValue } = useForm<PostFields>({
-    mode: "all",
-    reValidateMode: "onChange",
-    resolver: yupResolver(validationSchema),
-  });
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const filesArray = Array.from(event.target.files);
+      console.log(filesArray);
+      const imageUrls = filesArray.map((file) => URL.createObjectURL(file));
+      setImages((prevImages) => {
+        const newimages = [...prevImages, ...imageUrls];
+        return newimages;
+      });
+      const currentValues = getValues("images");
+      const newFileList = new DataTransfer();
+      if (currentValues) {
+        Array.from(currentValues).forEach((file) =>
+          newFileList.items.add(file)
+        );
+      }
+      filesArray.forEach((file) => newFileList.items.add(file));
+      setValue("images", newFileList.files);
+    }
+  };
+
+  const createPost: SubmitHandler<PostFields> = async (data) => {
+    console.log("data", data);
+    console.log(data.images ?? "noimage");
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("content", data.content);
+    if (data.images) {
+      Array.from(data.images).forEach((image) => {
+        formData.append("images", image);
+      });
+    }
+    if (data.tags) {
+      formData.append("tags", data.tags);
+    }
+    if (data.categories) {
+      formData.append("categories", data.categories);
+    }
+    formData.append("isPublished", "true");
+    try {
+      const CREATEURL =
+        import.meta.env.BLOGPOST_FRONTEND_API_URL + "/post/create";
+      const response = await axios.post(CREATEURL, formData, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success) {
+        toast.success("post created successfully");
+        reset();
+        setImages([]);
+        setAddingImages(false);
+        onHide();
+        window.location.reload();
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(`Error occurred, ${error.response?.data.message}`);
+      } else {
+        toast.error("An unknown error occurred");
+      }
+    }
+  };
+
+  const onError = (error: FieldErrors<PostFields>) => {
+    console.log(error);
+  };
+
   return (
-    <AddPostStyles className="my-3">
-      <div className="py-3 px-3 w-100 add-btn-container br-10 d-flex justify-content-between align-items-center">
-        <div className="profile-link me-2">
-          <Link to="/profile" title={username}>
-            <img
-              src={userPhoto}
-              alt="profile photo"
-              width={50}
-              height={50}
-              aria-label={username}
-            />
-          </Link>
-        </div>
-        <Button
-          onClick={modalShow}
-          className="w-100 on-your-mind-btn text-start px-3 px-lg-5"
-        >
-          What's on your mind? {username}
-        </Button>
-      </div>
-      <Modal show={showModal} centered onHide={modalHide} backdrop="static">
+    <AddPostModalStyles>
+      <Modal show={show} centered onHide={onHide} backdrop="static">
         <Modal.Header closeButton>
           <span className="me-2">
             <FaPenNib />
@@ -162,7 +186,7 @@ export const AddPost: React.FC = () => {
           <h3>Create a Blog</h3>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form onSubmit={handleSubmit(createPost, onError)}>
             <fieldset className="border-bottom">
               <FloatingLabel
                 label="Add a title"
@@ -224,8 +248,11 @@ export const AddPost: React.FC = () => {
                             type="file"
                             multiple
                             accept="image/*"
-                            {...register("images")}
-                            onChange={handleImageChange}
+                            {...register("images", {
+                              onChange: (e) => {
+                                handleImageChange(e);
+                              },
+                            })}
                             ref={addImageRef}
                           />
                         </Form.Group>
@@ -295,6 +322,6 @@ export const AddPost: React.FC = () => {
           </Form>
         </Modal.Body>
       </Modal>
-    </AddPostStyles>
+    </AddPostModalStyles>
   );
 };

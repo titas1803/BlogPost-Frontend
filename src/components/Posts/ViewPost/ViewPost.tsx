@@ -5,8 +5,11 @@ import { Button } from "react-bootstrap";
 import { SlLike } from "react-icons/sl";
 import { FaThumbsUp } from "react-icons/fa";
 import { PostCarousel } from "./PostCarousel";
-import { IPost } from "@/Utilities/Types";
+import { ILoginState, IPost } from "@/Utilities/Types";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { DeletePostBtn } from "./DeletePostBtn";
+import { MdDeleteOutline } from "react-icons/md";
 
 type Props = {
   post: IPost;
@@ -14,6 +17,12 @@ type Props = {
 
 export const ViewPost: React.FC<Props> = ({ post }) => {
   const [liked, setLiked] = useState(false);
+  const { userid } = useSelector(
+    (state: { login: ILoginState }) => state.login
+  );
+
+  console.log("postid", post._id);
+
   return (
     <ViewPostStyles className="d-block d-md-flex p-4 br-10">
       {post.image.length ? (
@@ -41,6 +50,11 @@ export const ViewPost: React.FC<Props> = ({ post }) => {
                 </Link>
               </p>
             </div>
+            {userid === post.authorId && (
+              <DeletePostBtn postid={post._id}>
+                <MdDeleteOutline />
+              </DeletePostBtn>
+            )}
             <h3>{post.title}</h3>
             <p>{post.content}</p>
           </section>
@@ -68,7 +82,7 @@ export const ViewPost: React.FC<Props> = ({ post }) => {
         </article>
         <section>
           <div>comments</div>
-          <AddComment postid={post.id} />
+          <AddComment postid={post._id} />
         </section>
       </div>
     </ViewPostStyles>

@@ -61,7 +61,7 @@ export interface ILoginPayload {
 }
 
 export interface IPost {
-  id: string;
+  _id: string;
   title: string;
   content: string;
   authorId: string;
