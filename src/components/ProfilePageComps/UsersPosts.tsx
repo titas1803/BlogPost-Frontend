@@ -7,10 +7,14 @@ import { ListOfPosts } from "../Posts";
 import { Button } from "react-bootstrap";
 import { AddPostModal } from "../Posts/AddPost/AddPostModal";
 import { AppState } from "@/store/store";
+import { io } from "socket.io-client";
 
 type Props = {
   userid?: string;
 };
+
+const socket = io("http://localhost:3001");
+
 export const UsersPosts: React.FC<Props> = ({ userid }) => {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowModal] = useState(false);
@@ -21,6 +25,42 @@ export const UsersPosts: React.FC<Props> = ({ userid }) => {
   const profileUserId = useMemo(() => {
     return userid ?? loggedInUserId;
   }, [loggedInUserId, userid]);
+
+  useEffect(() => {
+    // Join the profile room when visiting a user's profile
+    if (profileUserId) {
+      socket.emit("join_profile", profileUserId);
+    }
+
+    // Listen for new posts in this profile room
+    socket.on("new_post", (newPost: IPost) => {
+      console.log(newPost);
+      setPostsFound((prevPosts) => [newPost, ...(prevPosts ?? [])]);
+    });
+
+    // Listen for new posts in this profile room
+    socket.on("update_post", (updatedPost) => {
+      setPostsFound((prevPosts) => {
+        const updatedPostsArray = prevPosts?.map((post) =>
+          post._id === updatedPost._id ? updatedPost : post
+        );
+        return updatedPostsArray;
+      });
+    });
+
+    // Listen for new posts in this profile room
+    socket.on("delete_post", (deletedPostId: string) => {
+      setPostsFound((prevPosts) =>
+        prevPosts?.filter((post) => post._id !== deletedPostId)
+      );
+    });
+
+    return () => {
+      socket.off("update_post"); // Cleanup on unmount
+      socket.off("new_post"); // Cleanup on unmount
+      socket.off("delete_post"); // Cleanup on unmount
+    };
+  }, [profileUserId]);
 
   useEffect(() => {
     const source = axios.CancelToken.source();

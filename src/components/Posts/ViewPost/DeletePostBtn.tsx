@@ -30,7 +30,6 @@ export const DeletePostBtn: React.FC<Props> = ({
       });
       if (response.data.success) {
         toast.success("Post deleted successfully");
-        window.location.reload();
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

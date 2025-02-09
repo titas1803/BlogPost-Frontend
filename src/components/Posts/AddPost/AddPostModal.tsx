@@ -157,7 +157,6 @@ export const AddPostModal: React.FC<Props> = ({ show, onHide }) => {
         setImages([]);
         setAddingImages(false);
         onHide();
-        window.location.reload();
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
