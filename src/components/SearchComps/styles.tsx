@@ -14,3 +14,13 @@ export const SearchResultStyle = styled.div`
     }
   }
 `;
+
+export const HeaderSearchStyle = styled.div`
+  input {
+    border: 1px solid black;
+  }
+
+  #search-label {
+    border: 1px solid black;
+  }
+`;

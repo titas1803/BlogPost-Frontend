@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { AddPostStyles } from "./styles";
 import { Button } from "react-bootstrap";
-import { ILoginState, IUserState } from "@/Utilities/Types";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { processProfilePhotoPath } from "@/Utilities/utilities";
 import { fetchInitialuserDetails } from "@/slices/userSlice";
-import { AppDispatch } from "@/store/store";
+import { AppDispatch, AppState } from "@/store/store";
 import { AddPostModal } from "./AddPostModal";
 
 export const HomeAddPost: React.FC = () => {
@@ -14,13 +13,9 @@ export const HomeAddPost: React.FC = () => {
   const [userPhoto, setUserPhoto] = useState<string>("");
   const dispatch = useDispatch<AppDispatch>();
 
-  const { username } = useSelector(
-    (state: { login: ILoginState }) => state.login
-  );
+  const { username } = useSelector((state: AppState) => state.login);
 
-  const { isFetched, photo } = useSelector(
-    (state: { user: IUserState }) => state.user
-  );
+  const { isFetched, photo } = useSelector((state: AppState) => state.user);
 
   useEffect(() => {
     if (isFetched) {

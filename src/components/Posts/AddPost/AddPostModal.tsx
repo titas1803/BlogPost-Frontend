@@ -9,8 +9,8 @@ import AddImg from "/src/assets/icons8-plus-128.png";
 import { AddPostModalStyles } from "./styles";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { ILoginState } from "@/Utilities/Types";
 import toast from "react-hot-toast";
+import { AppState } from "@/store/store";
 
 type Props = {
   show: boolean;
@@ -74,7 +74,7 @@ export const AddPostModal: React.FC<Props> = ({ show, onHide }) => {
     });
 
   const { "auth-token": authToken } = useSelector(
-    (state: { login: ILoginState }) => state.login
+    (state: AppState) => state.login
   );
 
   const removeAllImages = () => {

@@ -3,21 +3,16 @@ import { ProfilePageStyle } from "./style";
 import {
   ProfileCard,
   ProfilePageBanner,
+  SubscribedToCarousel,
   UsersPosts,
 } from "@/components/ProfilePageComps";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import {
-  IFetchedUserDetails,
-  ILoginState,
-  IUserState,
-} from "@/Utilities/Types";
+import { IFetchedUserDetails, IUserState } from "@/Utilities/Types";
 import { useDispatch, useSelector } from "react-redux";
 import { LoadingModal } from "@/components/LoadingModal";
 import { fetchInitialuserDetails } from "@/slices/userSlice";
-import { AppDispatch } from "@/store/store";
-import { Button } from "react-bootstrap";
-import { AddPostModal } from "@/components/Posts/AddPost/AddPostModal";
+import { AppDispatch, AppState } from "@/store/store";
 
 type Props = {
   hasId?: boolean;
@@ -25,14 +20,11 @@ type Props = {
 
 export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
   const [userDetails, setUserDetails] = useState<IFetchedUserDetails>();
-  const [showAddModal, setShowModal] = useState(false);
   const { userid } = useParams<{ userid?: string }>();
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch<AppDispatch>();
 
-  const authToken = useSelector(
-    (state: { login: ILoginState }) => state.login["auth-token"]
-  );
+  const authToken = useSelector((state: AppState) => state.login["auth-token"]);
   const loggedInUserDetails = useSelector(
     (state: { user: IUserState }) => state.user
   );
@@ -71,11 +63,9 @@ export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
     }
 
     return () => {
-      source.cancel("Fetching user details cancelled");
+      source.cancel();
     };
   }, [authToken, userid, dispatch, hasId, loggedInUserDetails]);
-
-  const onModalHide = () => setShowModal(false);
 
   return (
     <ProfilePageStyle className="profile-page br-10 p-2 p-md-3">
@@ -87,14 +77,7 @@ export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
         <>
           <ProfilePageBanner />
           <ProfileCard userDetails={userDetails} />
-          {(!hasId || (hasId && loggedInUserDetails.id === userid)) && (
-            <>
-              <Button id="add-post-profile" onClick={() => setShowModal(true)}>
-                Add BlogPost
-              </Button>
-              <AddPostModal show={showAddModal} onHide={onModalHide} />
-            </>
-          )}
+          <SubscribedToCarousel userid={userid} />
           <UsersPosts userid={userid} />
         </>
       )}

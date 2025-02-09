@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import loginReducer from "@/slices/loginSlice";
 import userReducer from "@/slices/userSlice";
-export type AppDispatch = typeof store.dispatch;
+
 export const store = configureStore({
   reducer: {
     login: loginReducer,
@@ -11,3 +11,6 @@ export const store = configureStore({
     return getDefaultMiddleware({ serializableCheck: false });
   },
 });
+
+export type AppDispatch = typeof store.dispatch;
+export type AppState = ReturnType<typeof store.getState>;

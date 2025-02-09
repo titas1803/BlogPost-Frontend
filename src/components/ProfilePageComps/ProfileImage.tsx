@@ -1,6 +1,5 @@
 import { fetchInitialuserDetails } from "@/slices/userSlice";
-import { AppDispatch } from "@/store/store";
-import { ILoginState } from "@/Utilities/Types";
+import { AppDispatch, AppState } from "@/store/store";
 import axios from "axios";
 import React, { useMemo, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
@@ -20,8 +19,8 @@ type Props = {
 export const ProfileImage: React.FC<Props> = ({ image, alt, userId }) => {
   const [modalShow, setModalShow] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const { "auth-token": authToken } = useSelector(
-    (state: { login: ILoginState }) => state.login
+  const { "auth-token": authToken, userid: loggedInId } = useSelector(
+    (state: AppState) => state.login
   );
 
   const dispatch = useDispatch<AppDispatch>();
@@ -54,10 +53,6 @@ export const ProfileImage: React.FC<Props> = ({ image, alt, userId }) => {
       : defaultProfilePhoto;
     return photo;
   }, [image]);
-
-  const loggedInId = useSelector(
-    (state: { login: ILoginState }) => state.login.userid
-  );
 
   const modalHide = () => {
     setModalShow(false);

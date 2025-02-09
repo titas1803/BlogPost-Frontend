@@ -106,3 +106,25 @@ export const ProfileCardStyle = styled.div`
     }
   }
 `;
+
+export const SubscibedUserListStyle = styled.div`
+  div.user-card {
+    border: 2px solid black;
+    padding: 15px 10px;
+    border-radius: 15px;
+
+    button {
+      &.profile-image-btn {
+        border-radius: 50%;
+        border: 4px solid ${(props) => props.theme.color.borderGray};
+        width: max-content;
+
+        img {
+          width: 100px;
+          aspect-ratio: 1;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+`;

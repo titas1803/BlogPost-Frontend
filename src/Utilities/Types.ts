@@ -77,3 +77,10 @@ export interface IPost {
     userName: string;
   };
 }
+
+export interface ISubscribedToUsers {
+  userName: string;
+  id: string;
+  photo: string;
+  isSubscribedByLoggedInUser: boolean;
+}

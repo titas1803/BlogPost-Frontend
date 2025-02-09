@@ -1,28 +1,24 @@
 import { processPhotoPath } from "@/Utilities/utilities";
 import React from "react";
 import { Carousel } from "react-bootstrap";
+import { ImageCarousel } from "./styles";
 
 type Props = {
   images: string[];
-  imageWidth: number;
-  imageHeight: number;
   className?: string;
 };
 export const PostCarousel: React.FC<Props> = React.memo(
-  ({ className, images, imageHeight, imageWidth }) => {
+  ({ className, images }) => {
     return images.length ? (
-      <Carousel interval={null} className={`${className}`} fade slide={false}>
-        {images.map((image, index) => (
-          <Carousel.Item key={index}>
-            <img
-              src={processPhotoPath(image)}
-              alt={`blogimage-${index}`}
-              width={imageWidth}
-              height={imageHeight}
-            />
-          </Carousel.Item>
-        ))}
-      </Carousel>
+      <ImageCarousel className="w-100">
+        <Carousel interval={null} className={`${className}`} fade slide={false}>
+          {images.map((image, index) => (
+            <Carousel.Item key={index}>
+              <img src={processPhotoPath(image)} alt={`blogimage-${index}`} />
+            </Carousel.Item>
+          ))}
+        </Carousel>
+      </ImageCarousel>
     ) : (
       <></>
     );

@@ -3,18 +3,17 @@ import { ProfileCardStyle } from "./style";
 import { Button } from "react-bootstrap";
 import { VscCopy } from "react-icons/vsc";
 import { UpdateProfileImage } from "./UpdateProfileImage";
-import { IFetchedUserDetails, ILoginState } from "@/Utilities/Types";
+import { IFetchedUserDetails } from "@/Utilities/Types";
 import { useSelector } from "react-redux";
 import { ProfileImage } from "./ProfileImage";
+import { AppState } from "@/store/store";
 
 type Props = {
   userDetails: IFetchedUserDetails;
 };
 
 export const ProfileCard: React.FC<Props> = ({ userDetails }) => {
-  const loggedInUserid = useSelector(
-    (state: { login: ILoginState }) => state.login.userid
-  );
+  const loggedInUserid = useSelector((state: AppState) => state.login.userid);
   const { profilePhoto, dob } = useMemo(() => {
     const photo = userDetails.photo
       ? userDetails.photo.replaceAll("\\", "/")

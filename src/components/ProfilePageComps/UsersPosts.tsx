@@ -1,18 +1,22 @@
-import { ILoginState, IPost } from "@/Utilities/Types";
+import { IPost } from "@/Utilities/Types";
 import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { LoadingModal } from "../LoadingModal";
 import { ListOfPosts } from "../Posts";
+import { Button } from "react-bootstrap";
+import { AddPostModal } from "../Posts/AddPost/AddPostModal";
+import { AppState } from "@/store/store";
 
 type Props = {
   userid?: string;
 };
 export const UsersPosts: React.FC<Props> = ({ userid }) => {
   const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowModal] = useState(false);
   const [postsFound, setPostsFound] = useState<IPost[]>();
   const { userid: loggedInUserId, "auth-token": authToken } = useSelector(
-    (state: { login: ILoginState }) => state.login
+    (state: AppState) => state.login
   );
   const profileUserId = useMemo(() => {
     return userid ?? loggedInUserId;
@@ -36,6 +40,7 @@ export const UsersPosts: React.FC<Props> = ({ userid }) => {
         );
         const posts: IPost[] = response.data.posts;
         setPostsFound(posts);
+        console.log(posts);
         setLoading(false);
       } catch {
         setLoading(false);
@@ -44,9 +49,11 @@ export const UsersPosts: React.FC<Props> = ({ userid }) => {
     };
     fetchPosts();
     return () => {
-      source.cancel("Fetching Users posts cancelled");
+      source.cancel();
     };
   }, [authToken, profileUserId]);
+
+  const onModalHide = () => setShowModal(false);
 
   return (
     <>
@@ -54,9 +61,22 @@ export const UsersPosts: React.FC<Props> = ({ userid }) => {
         <LoadingModal show message="Posts loading" />
       ) : postsFound && postsFound.length ? (
         <>
-          <h3 className="px-4">
-            Posts <span className="noOfPosts">({postsFound.length})</span>
-          </h3>
+          <div className="d-flex justify-content-between w-100">
+            <h3 className="px-4">
+              Posts <span className="noOfPosts">({postsFound.length})</span>
+            </h3>
+            {loggedInUserId === profileUserId && (
+              <>
+                <Button
+                  id="add-post-profile"
+                  onClick={() => setShowModal(true)}
+                >
+                  Add BlogPost
+                </Button>
+              </>
+            )}
+          </div>
+          <AddPostModal show={showAddModal} onHide={onModalHide} />
           <hr />
           <ListOfPosts listOfPosts={postsFound} />
         </>

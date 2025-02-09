@@ -2,9 +2,8 @@ import React, { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { LoginFormStyle } from "./styles";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "@/store/store";
+import { AppDispatch, AppState } from "@/store/store";
 import { login } from "@/slices/loginSlice";
-import { ILoginState } from "@/Utilities/Types";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
 import { useViewPassword } from "@/hooks/viewPasswordHook";
 import { FaEye } from "react-icons/fa";
@@ -43,9 +42,7 @@ export const LoginForm: React.FC = () => {
   const fromUrl = searchParams.get("from");
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { loggedIn, error } = useSelector(
-    (state: { login: ILoginState }) => state.login
-  );
+  const { loggedIn, error } = useSelector((state: AppState) => state.login);
 
   useEffect(() => {
     if (loggedIn) {

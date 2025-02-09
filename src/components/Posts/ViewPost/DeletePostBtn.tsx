@@ -1,4 +1,4 @@
-import { ILoginState } from "@/Utilities/Types";
+import { AppState } from "@/store/store";
 import axios from "axios";
 import React from "react";
 import { Button } from "react-bootstrap";
@@ -8,13 +8,15 @@ import { useSelector } from "react-redux";
 type Props = {
   postid: string;
   children?: React.ReactNode;
+  className?: string;
 };
 export const DeletePostBtn: React.FC<Props> = ({
   children = "delete",
   postid,
+  className = "",
 }) => {
   const { "auth-token": authToken } = useSelector(
-    (state: { login: ILoginState }) => state.login
+    (state: AppState) => state.login
   );
 
   const deletePost = async () => {
@@ -40,7 +42,10 @@ export const DeletePostBtn: React.FC<Props> = ({
   };
 
   return (
-    <Button className="d-flex align-items-center" onClick={deletePost}>
+    <Button
+      className={`d-flex align-items-center ${className}`}
+      onClick={deletePost}
+    >
       {children}
     </Button>
   );

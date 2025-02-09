@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { ILoginState } from "../Utilities/Types";
 import axios from "axios";
-import { AppDispatch } from "@/store/store";
+import { AppDispatch, AppState } from "@/store/store";
 import { logout } from "@/slices/loginSlice";
 import { getCookie } from "@/Utilities/utilities";
 
@@ -15,9 +14,11 @@ export const ProtectedRoute: React.FC<Props> = ({ requiredRole = "USER" }) => {
   const [verified, setVerified] = useState(true);
   const location = useLocation();
 
-  const { userid } = useSelector(
-    (state: { login: ILoginState }) => state.login
-  );
+  const {
+    userid,
+    loggedIn,
+    role: userRole,
+  } = useSelector((state: AppState) => state.login);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -46,10 +47,6 @@ export const ProtectedRoute: React.FC<Props> = ({ requiredRole = "USER" }) => {
     if (getCookie("auth-token")) verifyToken();
     else setVerified(false);
   }, [dispatch, userid, location.pathname]);
-
-  const { loggedIn, role: userRole } = useSelector(
-    (state: { login: ILoginState }) => state.login
-  );
 
   if (!loggedIn || !verified) {
     return (

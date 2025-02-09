@@ -25,6 +25,7 @@ export const SiteTheme = {
   },
   color: {
     darkTeal: "#1b7c89",
+    btnBlue: "#324ca8",
     lightCyan: "#3ea5b3",
     sunset: "#F2C57C",
     buff: "#DDAE7E",
@@ -33,6 +34,7 @@ export const SiteTheme = {
     champagePink: "#EDDDD4",
     eggplant: "#734B5E",
     caputMortuum: "#522A27",
+    borderGray: "#c8c8c8",
   },
   fonts: {
     robotoRegular: "'robotoRegular', sans-serif",

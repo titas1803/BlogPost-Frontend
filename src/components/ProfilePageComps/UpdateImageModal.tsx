@@ -6,8 +6,7 @@ import { FormError } from "../FormError";
 import { mixed, object as yupObject } from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchInitialuserDetails } from "@/slices/userSlice";
-import { AppDispatch } from "@/store/store";
-import { ILoginState } from "@/Utilities/Types";
+import { AppDispatch, AppState } from "@/store/store";
 import { updateProfileImage } from "@/Utilities/utilities";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -40,7 +39,7 @@ export const UpdateImageModal: React.FC<Props> = ({ show, onHide }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { "auth-token": authToken } = useSelector(
-    (state: { login: ILoginState }) => state.login
+    (state: AppState) => state.login
   );
 
   const {
