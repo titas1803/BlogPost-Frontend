@@ -1,33 +1,66 @@
 import React, { useEffect, useState } from "react";
 import { ViewPostStyles } from "./styles";
-import { AddComment } from "@components/Comments";
+import { AddComment, ShowComments } from "@components/Comments";
 import { Button, Col, Container, Row } from "react-bootstrap";
-import { SlLike } from "react-icons/sl";
+import { SlLike, SlOptions } from "react-icons/sl";
 import { FaThumbsUp } from "react-icons/fa";
 import { PostCarousel } from "./PostCarousel";
 import { IPost } from "@/Utilities/Types";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { DeletePostBtn } from "./DeletePostBtn";
-import { MdDeleteOutline } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineModeEdit } from "react-icons/md";
 import { AppDispatch, AppState } from "@/store/store";
 import { logout } from "@/slices/loginSlice";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { deletePost, socket } from "@/Utilities/utilities";
+import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
+import { IoIosOptions } from "react-icons/io";
 
 type Props = {
   post: IPost;
 };
 
 export const ViewPost: React.FC<Props> = ({ post }) => {
+  const [postToShow, setPostToShow] = useState(post);
   const { userid, "auth-token": authToken } = useSelector(
     (state: AppState) => state.login
   );
   const [liked, setLiked] = useState(
-    userid ? post.likedBy.includes(userid) : false
+    userid ? postToShow.likedBy.includes(userid) : false
   );
 
+  const [showComments, setShowComments] = useState(false);
+
+  const showCommentClick = () => {
+    setShowComments((prev) => !prev);
+  };
+
   const dispatch = useDispatch<AppDispatch>();
+
+  const deleteThePost = async () => {
+    if (authToken) await deletePost(postToShow._id, authToken);
+    else {
+      dispatch(logout());
+    }
+  };
+
+  useEffect(() => {
+    if (location.pathname.startsWith("/profile") === false) {
+      socket.emit("join_post", postToShow._id);
+      socket.on("update_post", (updatedPost: IPost) => {
+        setPostToShow(updatedPost);
+      });
+      return () => {
+        socket.emit("leave_post", postToShow._id);
+        socket.off("update_post");
+      };
+    }
+  }, [postToShow._id]);
+
+  useEffect(() => {
+    setPostToShow(post);
+  }, [post]);
 
   useEffect(() => {
     if (!authToken) dispatch(logout());
@@ -35,7 +68,8 @@ export const ViewPost: React.FC<Props> = ({ post }) => {
 
   const likeAPost = async () => {
     const LIKEURL =
-      import.meta.env.BLOGPOST_FRONTEND_API_URL + `/post/like/${post._id}`;
+      import.meta.env.BLOGPOST_FRONTEND_API_URL +
+      `/post/like/${postToShow._id}`;
     try {
       const response = await axios.put(LIKEURL, undefined, {
         headers: {
@@ -53,7 +87,8 @@ export const ViewPost: React.FC<Props> = ({ post }) => {
 
   const unLikeAPost = async () => {
     const UNLIKEURL =
-      import.meta.env.BLOGPOST_FRONTEND_API_URL + `/post/unlike/${post._id}`;
+      import.meta.env.BLOGPOST_FRONTEND_API_URL +
+      `/post/unlike/${postToShow._id}`;
     try {
       const response = await axios.put(UNLIKEURL, undefined, {
         headers: {
@@ -73,49 +108,79 @@ export const ViewPost: React.FC<Props> = ({ post }) => {
     <ViewPostStyles className="p-2 p-md-4 br-10 mb-4">
       <Container>
         <Row>
-          {post.image.length > 0 && (
+          {postToShow.image.length > 0 && (
             <Col md={4}>
               <PostCarousel
-                images={post.image}
+                images={postToShow.image}
                 className="mx-0 me-md-3 d-none d-md-block"
               />
             </Col>
           )}
-          <Col md={post.image.length ? 8 : 12}>
+          <Col md={postToShow.image.length ? 8 : 12}>
             <div className="w-100">
               <article>
                 <section>
                   <div className="d-flex justify-content-between">
                     <div className="userdetails">
                       <p className="mb-0">
-                        <Link to={`/profile/${post.authorDetails._id}`}>
-                          <strong>{post.authorDetails.name}</strong>
+                        <Link to={`/profile/${postToShow.authorDetails._id}`}>
+                          <strong>{postToShow.authorDetails.name}</strong>
                         </Link>
                       </p>
                       <p>
-                        <Link to={`/profile/${post.authorDetails._id}`}>
-                          <small>@{post.authorDetails.userName}</small>
+                        <Link to={`/profile/${postToShow.authorDetails._id}`}>
+                          <small>@{postToShow.authorDetails.userName}</small>
                         </Link>
                       </p>
                     </div>
-                    {userid === post.authorId && (
+                    {userid === postToShow.authorId && (
                       <div>
-                        <DeletePostBtn postid={post._id}>
-                          <MdDeleteOutline />
-                        </DeletePostBtn>
+                        <SpeedDial
+                          ariaLabel="Options"
+                          FabProps={{
+                            className: "post-speeddial-icon-fab",
+                          }}
+                          icon={
+                            <SpeedDialIcon
+                              className="post-speeddial-icon"
+                              icon={<SlOptions fill="black" />}
+                              openIcon={<IoIosOptions fill="black" />}
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            />
+                          }
+                          direction="left"
+                          sx={{
+                            // position: "static",
+                            right: 0,
+                          }}
+                        >
+                          <SpeedDialAction
+                            icon={<MdOutlineModeEdit />}
+                            tooltipTitle={"Edit"}
+                            onClick={() => {
+                              console.log("edit", postToShow._id);
+                            }}
+                          />
+                          <SpeedDialAction
+                            tooltipTitle={"Delete"}
+                            icon={<MdDeleteOutline />}
+                            onClick={deleteThePost}
+                          />
+                        </SpeedDial>
                       </div>
                     )}
                   </div>
-                  <h3>{post.title}</h3>
-                  <p>{post.content}</p>
+                  <h3>{postToShow.title}</h3>
+                  <p>{postToShow.content}</p>
                 </section>
-                {post.image.length ? (
+                {postToShow.image.length > 0 && (
                   <PostCarousel
-                    images={post.image}
+                    images={postToShow.image}
                     className="mx-0 me-md-3 d-block d-md-none"
                   />
-                ) : (
-                  <></>
                 )}
                 <div className="d-flex justify-content-between">
                   <div>
@@ -129,18 +194,19 @@ export const ViewPost: React.FC<Props> = ({ post }) => {
                         <SlLike fill="blue" />
                       )}
                     </Button>{" "}
-                    <span>liked by {post.likedBy.length} people</span>
+                    <span>liked by {postToShow.likedBy.length} people</span>
                   </div>
                   <p>
-                    <Button variant="link">
-                      {post.commentsCount} comments
+                    <Button variant="link" onClick={showCommentClick}>
+                      {postToShow.commentsCount} comments
                     </Button>
                   </p>
                 </div>
               </article>
               <section>
                 <div>comments</div>
-                <AddComment postid={post._id} />
+                <AddComment postid={postToShow._id} />
+                {showComments && <ShowComments postid={postToShow._id} />}
               </section>
             </div>
           </Col>

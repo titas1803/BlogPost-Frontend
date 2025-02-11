@@ -18,7 +18,7 @@ export const SubscribedList: React.FC<Props> = ({ user }) => {
   const unSubscribe = useUnSubscribe();
   const profilePhoto = useMemo(() => {
     const photo = user.photo
-      ? `${import.meta.env.BLOGPOST_FRONTEND_DB_IMAGES}${user.photo}`
+      ? `${import.meta.env.BLOGPOST_FRONTEND_BACKEND_URL}${user.photo}`
       : defaultProfilePhoto;
     return photo;
   }, [user.photo]);

@@ -49,7 +49,7 @@ export const ProfileImage: React.FC<Props> = ({ image, alt, userId }) => {
 
   const profilePhoto = useMemo(() => {
     const photo = image
-      ? `${import.meta.env.BLOGPOST_FRONTEND_DB_IMAGES}${image}`
+      ? `${import.meta.env.BLOGPOST_FRONTEND_BACKEND_URL}${image}`
       : defaultProfilePhoto;
     return photo;
   }, [image]);

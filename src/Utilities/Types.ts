@@ -11,7 +11,7 @@ export type UserDetailsType = {
 };
 
 export interface IFetchedUserDetails {
-  id: string;
+  _id: string;
   name: string;
   userName: string;
   email: string;
@@ -60,6 +60,12 @@ export interface ILoginPayload {
   password: string;
 }
 
+export interface IAuthorDetails {
+  _id: string;
+  name: string;
+  userName: string;
+}
+
 export interface IPost {
   _id: string;
   title: string;
@@ -71,11 +77,18 @@ export interface IPost {
   likedBy: string[];
   isPublished: boolean;
   commentsCount: number;
-  authorDetails: {
-    _id: string;
-    name: string;
-    userName: string;
-  };
+  authorDetails: IAuthorDetails;
+}
+
+export interface IComments {
+  _id: string;
+  authorDetails: IAuthorDetails;
+  authorId: string;
+  commentText: string;
+  createdAt: string;
+  updatedAt: string;
+  likedBy: string[];
+  postId: string;
 }
 
 export interface ISubscribedToUsers {

@@ -1,5 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+import { io } from "socket.io-client";
 
 export const getCookie = (name: string) => {
   return Cookies.get(name);
@@ -7,7 +9,10 @@ export const getCookie = (name: string) => {
 
 export const setCookie = (name: string, value: string) => {
   return Cookies.set(name, value, {
-    expires: 1 / 24,
+    expires: 7,
+    secure: true, // Ensures the cookie is sent over HTTPS only
+    sameSite: "Strict", // Prevents CSRF attacks
+    path: "/", // Available throughout the site
   });
 };
 
@@ -39,7 +44,7 @@ export const verifyAuthToken = async (token?: string) => {
 
 export const processPhotoPath = (path: string): string => {
   if (path && path.length > 0) {
-    return import.meta.env.BLOGPOST_FRONTEND_DB_IMAGES + path;
+    return import.meta.env.BLOGPOST_FRONTEND_BACKEND_URL + path;
   } else {
     return path;
   }
@@ -70,3 +75,27 @@ export const updateProfileImage = async (
 
   return response;
 };
+
+export const deletePost = async (postid: string, authToken: string) => {
+  console.log("post deleted");
+  const DELETEURL =
+    import.meta.env.BLOGPOST_FRONTEND_API_URL + `/post/${postid}`;
+  try {
+    const response = await axios.delete(DELETEURL, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    if (response.data.success) {
+      toast.success("Post deleted successfully");
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      toast.error(`Error occurred, ${error.response?.data.message}`);
+    } else {
+      toast.error("An unknown error occurred");
+    }
+  }
+};
+
+export const socket = io(import.meta.env.BLOGPOST_FRONTEND_BACKEND_URL);

@@ -1,10 +1,12 @@
 import { IFetchedUserDetails, IPost } from "@/Utilities/Types";
 import axios, { AxiosError } from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { ListOfPosts } from "../Posts";
 import { SearchResultStyle } from "./styles";
+import { LoadingModal } from "../LoadingModal";
+import { Link } from "react-router-dom";
 
 type Props = {
   keyword: string;
@@ -31,6 +33,7 @@ export const SearchResult: React.FC<Props> = ({ keyword }) => {
     userError: "",
     postError: "",
   });
+  const [isPending, startTransition] = useTransition();
 
   const [activeSection, setActiveSection] = useState<"POSTS" | "PEOPLE">(
     "POSTS"
@@ -111,8 +114,11 @@ export const SearchResult: React.FC<Props> = ({ keyword }) => {
         }));
       }
     };
-    searchPost();
-    searchUser();
+
+    startTransition(() => {
+      searchPost();
+      searchUser();
+    });
 
     return () => {
       sourcePost.cancel();
@@ -122,60 +128,72 @@ export const SearchResult: React.FC<Props> = ({ keyword }) => {
 
   return (
     <SearchResultStyle>
-      <div className="section-buttons px-4">
-        {loggedIn && (
-          <Button
-            className={`people-btn ${
-              activeSection === "PEOPLE" ? "active" : ""
-            }`}
-            onClick={sectionBtnClick("PEOPLE")}
-          >
-            People ({userSearchResult?.length ?? 0})
-          </Button>
-        )}
-        <Button
-          className={`post-btn ${activeSection === "POSTS" ? "active" : ""}`}
-          onClick={sectionBtnClick("POSTS")}
-        >
-          Posts ({postSearchResult?.length ?? 0})
-        </Button>
-      </div>
-      <div className="result-section">
-        {loggedIn && (
-          <div
-            className={`people-section ${
-              activeSection !== "PEOPLE" ? "d-none" : ""
-            }`}
-          >
-            {errorMessage.userError ? (
-              <p className="error">{errorMessage.userError}</p>
-            ) : (
-              <div className="result">
-                {userSearchResult?.map((user, index) => {
-                  return <p key={index}>{user.name}</p>;
-                })}
+      {isPending ? (
+        <LoadingModal show message="Searching..." />
+      ) : (
+        <>
+          <div className="section-buttons px-4">
+            {loggedIn && (
+              <Button
+                className={`people-btn ${
+                  activeSection === "PEOPLE" ? "active" : ""
+                }`}
+                onClick={sectionBtnClick("PEOPLE")}
+              >
+                People ({userSearchResult?.length ?? 0})
+              </Button>
+            )}
+            <Button
+              className={`post-btn ${
+                activeSection === "POSTS" ? "active" : ""
+              }`}
+              onClick={sectionBtnClick("POSTS")}
+            >
+              Posts ({postSearchResult?.length ?? 0})
+            </Button>
+          </div>
+          <div className="result-section">
+            {loggedIn && (
+              <div
+                className={`people-section ${
+                  activeSection !== "PEOPLE" ? "d-none" : ""
+                }`}
+              >
+                {errorMessage.userError ? (
+                  <p className="error">{errorMessage.userError}</p>
+                ) : (
+                  <div className="result">
+                    {userSearchResult?.map((user, index) => {
+                      return (
+                        <Link to={`/profile/${user._id}`} key={index}>
+                          {user.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
-        <div
-          className={`posts-section ${
-            activeSection !== "POSTS" ? "d-none" : ""
-          }`}
-        >
-          {errorMessage.postError ? (
-            <p className="error">{errorMessage.postError}</p>
-          ) : (
-            <div className="result">
-              {postSearchResult ? (
-                <ListOfPosts listOfPosts={postSearchResult} />
+            <div
+              className={`posts-section ${
+                activeSection !== "POSTS" ? "d-none" : ""
+              }`}
+            >
+              {errorMessage.postError ? (
+                <p className="error">{errorMessage.postError}</p>
               ) : (
-                <></>
+                <div className="result">
+                  {postSearchResult ? (
+                    <ListOfPosts listOfPosts={postSearchResult} />
+                  ) : (
+                    <></>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+        </>
+      )}
     </SearchResultStyle>
   );
 };

@@ -1,6 +1,6 @@
 import { ISubscribedToUsers } from "@/Utilities/Types";
 import axios from "axios";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useTransition } from "react";
 import { useSelector } from "react-redux";
 import { SubscribedList } from "./SubscribedList";
 import { AppState } from "@/store/store";
@@ -12,6 +12,9 @@ type Props = {
 export const SubscribedToCarousel: React.FC<Props> = ({ userid }) => {
   const [listOfSubscribedTo, setListOfSubscribedTo] =
     useState<ISubscribedToUsers[]>();
+
+  const [isPending, startTransition] = useTransition();
+
   const { userid: loggedInUserId, "auth-token": authToken } = useSelector(
     (state: AppState) => state.login
   );
@@ -42,7 +45,9 @@ export const SubscribedToCarousel: React.FC<Props> = ({ userid }) => {
         setListOfSubscribedTo(undefined);
       }
     };
-    fetchSubscribedTo();
+    startTransition(() => {
+      fetchSubscribedTo();
+    });
     return () => {
       source.cancel();
     };
@@ -50,12 +55,17 @@ export const SubscribedToCarousel: React.FC<Props> = ({ userid }) => {
 
   return (
     <>
-      {listOfSubscribedTo && listOfSubscribedTo.length > 0 && (
-        <div className="d-flex px-3">
-          {listOfSubscribedTo.map((author) => (
-            <SubscribedList user={author} key={author.id} />
-          ))}
-        </div>
+      {isPending ? (
+        <p>Loading...</p>
+      ) : (
+        listOfSubscribedTo &&
+        listOfSubscribedTo.length > 0 && (
+          <div className="d-flex px-3">
+            {listOfSubscribedTo.map((author) => (
+              <SubscribedList user={author} key={author.id} />
+            ))}
+          </div>
+        )
       )}
     </>
   );

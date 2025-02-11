@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { ProfilePageStyle } from "./style";
 import {
   ProfileCard,
@@ -21,8 +21,8 @@ type Props = {
 export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
   const [userDetails, setUserDetails] = useState<IFetchedUserDetails>();
   const { userid } = useParams<{ userid?: string }>();
-  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch<AppDispatch>();
+  const [isPending, startTransition] = useTransition();
 
   const authToken = useSelector((state: AppState) => state.login["auth-token"]);
   const loggedInUserDetails = useSelector(
@@ -30,12 +30,6 @@ export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
   );
 
   useEffect(() => {
-    if (!hasId && loggedInUserDetails.isFetched) {
-      setUserDetails(loggedInUserDetails);
-      setLoading(false);
-      return;
-    }
-
     const source = axios.CancelToken.source();
     const fetchUserDetails = async () => {
       try {
@@ -49,18 +43,19 @@ export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
         setUserDetails(response.data.success ? response.data.user : undefined);
       } catch {
         setUserDetails(undefined);
-      } finally {
-        setLoading(false);
       }
     };
-
-    if (hasId) {
-      setLoading(true);
-      fetchUserDetails();
-    } else if (!loggedInUserDetails.isFetched) {
-      dispatch(fetchInitialuserDetails());
-      setLoading(false);
-    }
+    startTransition(() => {
+      if (!hasId && loggedInUserDetails.isFetched) {
+        setUserDetails(loggedInUserDetails);
+        return;
+      }
+      if (hasId) {
+        fetchUserDetails();
+      } else if (!loggedInUserDetails.isFetched) {
+        dispatch(fetchInitialuserDetails());
+      }
+    });
 
     return () => {
       source.cancel();
@@ -69,7 +64,7 @@ export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
 
   return (
     <ProfilePageStyle className="profile-page br-10 p-2 p-md-3">
-      {loading ? (
+      {isPending ? (
         <LoadingModal show message="Loading.." />
       ) : !userDetails ? (
         <p>404. Details not found.</p>
