@@ -35,9 +35,9 @@ export const ProfileCard: React.FC<Props> = ({ userDetails }) => {
           <ProfileImage
             image={profilePhoto}
             alt={userDetails.userName}
-            userId={userDetails.id}
+            userId={userDetails._id}
           />
-          {loggedInUserid === userDetails.id && <UpdateProfileImage />}
+          {loggedInUserid === userDetails._id && <UpdateProfileImage />}
         </div>
       </div>
       <div className="profile-details p-3 mx-auto">

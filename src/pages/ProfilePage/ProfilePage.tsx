@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { LoadingModal } from "@/components/LoadingModal";
 import { fetchInitialuserDetails } from "@/slices/userSlice";
 import { AppDispatch, AppState } from "@/store/store";
+import { socket } from "@/Utilities/utilities";
 
 type Props = {
   hasId?: boolean;
@@ -62,6 +63,18 @@ export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
     };
   }, [authToken, userid, dispatch, hasId, loggedInUserDetails]);
 
+  console.log(userDetails, userDetails?._id);
+
+  useEffect(() => {
+    // Join the profile room when visiting a user's profile
+    if (userid) {
+      socket.emit("join_profile", userid);
+    }
+    return () => {
+      socket.emit("leave_profile", userid);
+    };
+  }, [userid]);
+
   return (
     <ProfilePageStyle className="profile-page br-10 p-2 p-md-3">
       {isPending ? (
@@ -70,7 +83,7 @@ export const ProfilePage: React.FC<Props> = ({ hasId = false }) => {
         <p>404. Details not found.</p>
       ) : (
         <>
-          <ProfilePageBanner />
+          <ProfilePageBanner userid={userDetails._id} />
           <ProfileCard userDetails={userDetails} />
           <SubscribedToCarousel userid={userid} />
           <UsersPosts userid={userid} />

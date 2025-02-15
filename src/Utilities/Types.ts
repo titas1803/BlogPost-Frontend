@@ -75,7 +75,7 @@ export interface IPost {
   categories: string[];
   image: string[];
   likedBy: string[];
-  isPublished: boolean;
+  isPublished: "true" | "false";
   commentsCount: number;
   authorDetails: IAuthorDetails;
 }

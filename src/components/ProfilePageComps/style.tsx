@@ -9,6 +9,11 @@ export const ProfilePageBannerStyle = styled.div`
       aspect-ratio: 4;
     }
   }
+
+  .btn-section {
+    top: 5px;
+    right: 0;
+  }
 `;
 
 export const ProfileCardStyle = styled.div`

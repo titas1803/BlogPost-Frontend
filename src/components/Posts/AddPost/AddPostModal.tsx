@@ -61,17 +61,43 @@ const validationSchema = yupObject().shape({
     ),
 });
 
+const createFormData = (data: PostFields, isPublished: "true" | "false") => {
+  const formData = new FormData();
+  formData.append("title", data.title);
+  formData.append("content", data.content);
+  if (data.images) {
+    Array.from(data.images).forEach((image) => {
+      formData.append("images", image);
+    });
+  }
+  if (data.tags) {
+    formData.append("tags", data.tags);
+  }
+  if (data.categories) {
+    formData.append("categories", data.categories);
+  }
+  formData.append("isPublished", isPublished);
+  return formData;
+};
+
 export const AddPostModal: React.FC<Props> = ({ show, onHide }) => {
   const [images, setImages] = useState<Array<string>>([]);
   const [addingImages, setAddingImages] = useState(false);
   const addImageRef = useRef<HTMLInputElement>(null);
 
-  const { register, setValue, getValues, handleSubmit, reset } =
-    useForm<PostFields>({
-      mode: "all",
-      reValidateMode: "onChange",
-      resolver: yupResolver(validationSchema),
-    });
+  const {
+    register,
+    setValue,
+    getValues,
+    handleSubmit,
+    reset,
+    trigger,
+    formState: { isValid },
+  } = useForm<PostFields>({
+    mode: "all",
+    reValidateMode: "onChange",
+    resolver: yupResolver(validationSchema),
+  });
 
   const { "auth-token": authToken } = useSelector(
     (state: AppState) => state.login
@@ -125,22 +151,7 @@ export const AddPostModal: React.FC<Props> = ({ show, onHide }) => {
     }
   };
 
-  const createPost: SubmitHandler<PostFields> = async (data) => {
-    const formData = new FormData();
-    formData.append("title", data.title);
-    formData.append("content", data.content);
-    if (data.images) {
-      Array.from(data.images).forEach((image) => {
-        formData.append("images", image);
-      });
-    }
-    if (data.tags) {
-      formData.append("tags", data.tags);
-    }
-    if (data.categories) {
-      formData.append("categories", data.categories);
-    }
-    formData.append("isPublished", "true");
+  const createPostAPi = async (formData: FormData) => {
     try {
       const CREATEURL =
         import.meta.env.BLOGPOST_FRONTEND_API_URL + "/post/create";
@@ -167,6 +178,21 @@ export const AddPostModal: React.FC<Props> = ({ show, onHide }) => {
     }
   };
 
+  const createPost: SubmitHandler<PostFields> = async (data) => {
+    console.log("publish");
+    await createPostAPi(createFormData(data, "false"));
+  };
+
+  const createDraftPost = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    console.log("draft");
+    if (isValid) {
+      const formValues = getValues();
+      await createPostAPi(createFormData(formValues, "false"));
+    } else {
+      await trigger();
+    }
+  };
   const onError = (error: FieldErrors<PostFields>) => {
     console.log(error);
   };
@@ -310,7 +336,12 @@ export const AddPostModal: React.FC<Props> = ({ show, onHide }) => {
               <Button type="submit" variant="success" className="mx-2 px-3">
                 Post
               </Button>
-              <Button type="submit" className="mx-2" variant="light">
+              <Button
+                type="button"
+                className="mx-2"
+                variant="light"
+                onClick={createDraftPost}
+              >
                 Save as Draft
               </Button>
             </Form.Group>

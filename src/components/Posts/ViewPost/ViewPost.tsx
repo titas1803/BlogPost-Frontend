@@ -13,9 +13,9 @@ import { AppDispatch, AppState } from "@/store/store";
 import { logout } from "@/slices/loginSlice";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { deletePost, socket } from "@/Utilities/utilities";
+import { deletePost, socket, updatePost } from "@/Utilities/utilities";
 import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
-import { IoIosOptions } from "react-icons/io";
+import { IoIosOptions, IoIosSend } from "react-icons/io";
 
 type Props = {
   post: IPost;
@@ -37,13 +37,6 @@ export const ViewPost: React.FC<Props> = ({ post }) => {
   };
 
   const dispatch = useDispatch<AppDispatch>();
-
-  const deleteThePost = async () => {
-    if (authToken) await deletePost(postToShow._id, authToken);
-    else {
-      dispatch(logout());
-    }
-  };
 
   useEffect(() => {
     if (location.pathname.startsWith("/profile") === false) {
@@ -101,6 +94,21 @@ export const ViewPost: React.FC<Props> = ({ post }) => {
       }
     } catch {
       toast.error("Error occured");
+    }
+  };
+
+  const deleteThePost = async () => {
+    if (authToken) await deletePost(postToShow._id, authToken);
+    else {
+      dispatch(logout());
+    }
+  };
+
+  const publishDraftPost = async () => {
+    if (authToken)
+      await updatePost(postToShow._id, { isPublished: "true" }, authToken);
+    else {
+      dispatch(logout());
     }
   };
 
@@ -164,11 +172,19 @@ export const ViewPost: React.FC<Props> = ({ post }) => {
                               console.log("edit", postToShow._id);
                             }}
                           />
+
                           <SpeedDialAction
                             tooltipTitle={"Delete"}
                             icon={<MdDeleteOutline />}
                             onClick={deleteThePost}
                           />
+                          {postToShow.isPublished === "false" && (
+                            <SpeedDialAction
+                              icon={<IoIosSend />}
+                              tooltipTitle={"Publish"}
+                              onClick={publishDraftPost}
+                            />
+                          )}
                         </SpeedDial>
                       </div>
                     )}

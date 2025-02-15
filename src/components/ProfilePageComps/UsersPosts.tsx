@@ -26,11 +26,6 @@ export const UsersPosts: React.FC<Props> = ({ userid }) => {
   }, [loggedInUserId, userid]);
 
   useEffect(() => {
-    // Join the profile room when visiting a user's profile
-    if (profileUserId) {
-      socket.emit("join_profile", profileUserId);
-    }
-
     // Listen for new posts in this profile room
     socket.on("new_post", (newPost: IPost) => {
       setPostsFound((prevPosts) => [newPost, ...(prevPosts ?? [])]);
@@ -38,6 +33,7 @@ export const UsersPosts: React.FC<Props> = ({ userid }) => {
 
     // Listen for new posts in this profile room
     socket.on("update_post_inprofile", (updatedPost) => {
+      console.log("update happened");
       setPostsFound((prevPosts) => {
         const updatedPostsArray = prevPosts?.map((post) =>
           post._id === updatedPost._id ? updatedPost : post
@@ -57,7 +53,6 @@ export const UsersPosts: React.FC<Props> = ({ userid }) => {
       socket.off("update_post_inprofile"); // Cleanup on unmount
       socket.off("new_post"); // Cleanup on unmount
       socket.off("delete_post_inprofile"); // Cleanup on unmount
-      socket.emit("leave_profile", profileUserId);
     };
   }, [profileUserId]);
 

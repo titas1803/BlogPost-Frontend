@@ -5,6 +5,7 @@ import axios from "axios";
 import { IPost } from "@/Utilities/Types";
 import { useSelector } from "react-redux";
 import { AppState } from "@/store/store";
+import { HomeCarousel } from "@/components/HomeCarousel";
 
 export const Home: React.FC = () => {
   const [post, setPost] = useState<IPost>();
@@ -39,6 +40,7 @@ export const Home: React.FC = () => {
   return (
     <HomeStyle className="mx-auto">
       <HomeAddPost />
+      <HomeCarousel />
       {isPending && <p>Loading..</p>}
       {post ? <ViewPost post={post} /> : <p>No post found</p>}
     </HomeStyle>

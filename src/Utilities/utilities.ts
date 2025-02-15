@@ -98,4 +98,38 @@ export const deletePost = async (postid: string, authToken: string) => {
   }
 };
 
+export const updatePost = async (
+  postid: string,
+  body:
+    | {
+        title?: string;
+        content?: string;
+        tags?: string;
+        categories?: string;
+        isPublished?: "true" | "false";
+      }
+    | FormData,
+  authToken: string
+) => {
+  console.log("post updated");
+  const UPDATEURL =
+    import.meta.env.BLOGPOST_FRONTEND_API_URL + `/post/${postid}`;
+  try {
+    const response = await axios.patch(UPDATEURL, body, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    if (response.data.success) {
+      toast.success("Post updated successfully");
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      toast.error(`Error occurred, ${error.response?.data.message}`);
+    } else {
+      toast.error("An unknown error occurred");
+    }
+  }
+};
+
 export const socket = io(import.meta.env.BLOGPOST_FRONTEND_BACKEND_URL);
