@@ -8,12 +8,10 @@ import { Button } from "react-bootstrap";
 import { AddPostModal } from "../Posts/AddPost/AddPostModal";
 import { AppState } from "@/store/store";
 import { socket } from "@/Utilities/utilities";
+import { useProfileContext } from "@/hooks/profileCtxHook";
 
-type Props = {
-  userid?: string;
-};
-
-export const UsersPosts: React.FC<Props> = ({ userid }) => {
+export const UsersPosts: React.FC = () => {
+  const { userid } = useProfileContext();
   const [showAddModal, setShowModal] = useState(false);
   const [postsFound, setPostsFound] = useState<IPost[]>();
   const { userid: loggedInUserId, "auth-token": authToken } = useSelector(
@@ -33,7 +31,6 @@ export const UsersPosts: React.FC<Props> = ({ userid }) => {
 
     // Listen for new posts in this profile room
     socket.on("update_post_inprofile", (updatedPost) => {
-      console.log("update happened");
       setPostsFound((prevPosts) => {
         const updatedPostsArray = prevPosts?.map((post) =>
           post._id === updatedPost._id ? updatedPost : post

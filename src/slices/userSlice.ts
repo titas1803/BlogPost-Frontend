@@ -4,7 +4,7 @@ import axios from "axios";
 import { logout } from "./loginSlice";
 
 const initialState: IUserState = {
-  id: "",
+  _id: "",
   isLoading: true,
   hasError: false,
   isFetched: false,

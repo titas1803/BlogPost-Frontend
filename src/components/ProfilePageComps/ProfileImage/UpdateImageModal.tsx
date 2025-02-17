@@ -2,7 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { FieldErrors, SubmitHandler, useForm } from "react-hook-form";
-import { FormError } from "../FormError";
+import { FormError } from "@/components/FormError";
 import { mixed, object as yupObject } from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchInitialuserDetails } from "@/slices/userSlice";

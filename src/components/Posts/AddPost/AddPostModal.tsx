@@ -179,13 +179,11 @@ export const AddPostModal: React.FC<Props> = ({ show, onHide }) => {
   };
 
   const createPost: SubmitHandler<PostFields> = async (data) => {
-    console.log("publish");
     await createPostAPi(createFormData(data, "false"));
   };
 
   const createDraftPost = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log("draft");
     if (isValid) {
       const formValues = getValues();
       await createPostAPi(createFormData(formValues, "false"));
@@ -193,6 +191,7 @@ export const AddPostModal: React.FC<Props> = ({ show, onHide }) => {
       await trigger();
     }
   };
+
   const onError = (error: FieldErrors<PostFields>) => {
     console.log(error);
   };

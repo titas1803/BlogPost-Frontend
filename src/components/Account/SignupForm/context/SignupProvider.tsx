@@ -31,15 +31,7 @@ export const SignupProvider: React.FC<Props> = ({ children }) => {
       setActiveFormIndex,
       fromUrl: searchParams.get("from"),
     };
-  }, [
-    details,
-    setDetails,
-    password,
-    setPassword,
-    searchParams,
-    activeFormIndex,
-    setActiveFormIndex,
-  ]);
+  }, [details, password, searchParams, activeFormIndex]);
 
   return (
     <SignUpContext.Provider value={ctxvalue}>{children}</SignUpContext.Provider>

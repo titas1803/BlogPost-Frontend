@@ -6,21 +6,20 @@ import { CiEdit, CiImageOn } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "@/store/store";
 import { logout } from "@/slices/loginSlice";
+import { useProfileContext } from "@/hooks/profileCtxHook";
 
 type Props = {
-  userid: string;
   bannerImage?: string;
 };
 export const ProfilePageBanner: React.FC<Props> = ({
-  userid,
   bannerImage = BannerImage,
 }) => {
+  const { userid } = useProfileContext();
   const { userid: loggedIsUseId, "auth-token": authToken } = useSelector(
     (state: AppState) => state.login
   );
 
   const isSameUser = useMemo(() => {
-    console.log(userid, loggedIsUseId);
     return userid === loggedIsUseId;
   }, [loggedIsUseId, userid]);
 

@@ -1,57 +1,14 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { FormEvent } from "react";
 import { FloatingLabel, Button } from "react-bootstrap";
-import {
-  SubmitHandler,
-  FieldErrors,
-  useForm,
-  UseFormSetError,
-} from "react-hook-form";
+import { SubmitHandler, FieldErrors, useForm } from "react-hook-form";
 import { Form } from "react-bootstrap";
 import { object as yupObject, string as yupString, date as yupDate } from "yup";
 import { useSignUpContext } from "@/hooks/signupHook";
 import { FormError } from "@components/FormError";
-import axios from "axios";
 import { MdOutlineNavigateNext } from "react-icons/md";
-
-const usernameAvailabilityApiCall = async (
-  username: string,
-  setError?: UseFormSetError<DetailsFormValuesType>
-) => {
-  const isAvailable = await axios
-    .get(
-      import.meta.env.BLOGPOST_FRONTEND_API_URL +
-        "/user/username-available/" +
-        username
-    )
-    .then((res) => (res.status === 200 ? res.data.available : false))
-    .catch(() => {
-      return false;
-    });
-  if (!isAvailable && setError)
-    setError("username", {
-      type: "notAvailable",
-      message: "Username not available. Please choose something else",
-    });
-  return isAvailable;
-};
-
-const usernameAvailabilityCheck = async (delay = 1000) => {
-  let timeOut: NodeJS.Timeout;
-  return async (
-    username: string,
-    setError?: UseFormSetError<DetailsFormValuesType>
-  ) => {
-    clearTimeout(timeOut);
-    if (username && username.length > 4) {
-      timeOut = setTimeout(async () => {
-        await usernameAvailabilityApiCall(username, setError);
-      }, delay);
-    }
-  };
-};
-
-const usernameInputDebounce = await usernameAvailabilityCheck();
+import { usernameInputDebounce } from "@/Utilities/utilities";
+import { IDetailsFormValues } from "@/Utilities/Types";
 
 const schema = yupObject().shape({
   firstName: yupString().required("Please enter your first name."),
@@ -80,16 +37,6 @@ const schema = yupObject().shape({
     ),
 });
 
-type DetailsFormValuesType = {
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
-  phone: string;
-  gender: "male" | "female";
-  dob: Date;
-};
-
 export const DetailsForm: React.FC = () => {
   const { setDetails, setActiveFormIndex } = useSignUpContext();
 
@@ -103,21 +50,15 @@ export const DetailsForm: React.FC = () => {
     }
   };
 
-  const onSubmitDetails: SubmitHandler<DetailsFormValuesType> = async (
-    data
-  ) => {
-    const dobMonth = data.dob.getMonth();
-    const dobMonthString = (dobMonth < 9 ? "0" : "") + (dobMonth + 1);
-    const dobString =
-      dobMonthString + "-" + data.dob.getDate() + "-" + data.dob.getFullYear();
+  const onSubmitDetails: SubmitHandler<IDetailsFormValues> = async (data) => {
     setDetails({
       ...data,
-      dob: dobString,
+      dob: data.dob.toISOString().split("T")[0],
     });
     setActiveFormIndex(1);
   };
 
-  const onError = (error: FieldErrors<DetailsFormValuesType>) => {
+  const onError = (error: FieldErrors<IDetailsFormValues>) => {
     console.log(error);
   };
 
@@ -126,7 +67,7 @@ export const DetailsForm: React.FC = () => {
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<DetailsFormValuesType>({
+  } = useForm<IDetailsFormValues>({
     mode: "all",
     reValidateMode: "onChange",
     resolver: yupResolver(schema),

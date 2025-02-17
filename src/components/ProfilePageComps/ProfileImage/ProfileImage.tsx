@@ -7,8 +7,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { AiOutlineDelete } from "react-icons/ai";
 import { RiImageEditLine } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
-import defaultProfilePhoto from "@/assets/profile-user.png";
-import { UpdateImageModal } from "./UpdateImageModal";
+import { UpdateImageModal } from "../ProfileImage/UpdateImageModal";
+import { processProfilePhotoPath } from "@/Utilities/utilities";
 
 type Props = {
   image: string;
@@ -48,9 +48,7 @@ export const ProfileImage: React.FC<Props> = ({ image, alt, userId }) => {
   };
 
   const profilePhoto = useMemo(() => {
-    const photo = image
-      ? `${import.meta.env.BLOGPOST_FRONTEND_BACKEND_URL}${image}`
-      : defaultProfilePhoto;
+    const photo = processProfilePhotoPath(image);
     return photo;
   }, [image]);
 

@@ -2,7 +2,12 @@ import { IComments } from "@/Utilities/Types";
 import React, { useMemo, useState } from "react";
 import { CommentStyle } from "./styles";
 import { Link } from "react-router-dom";
-import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
+import {
+  Avatar,
+  SpeedDial,
+  SpeedDialAction,
+  SpeedDialIcon,
+} from "@mui/material";
 import { SlLike, SlOptions } from "react-icons/sl";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -11,6 +16,7 @@ import { useSelector } from "react-redux";
 import { AppState } from "@/store/store";
 import { Button } from "react-bootstrap";
 import { FaThumbsUp } from "react-icons/fa";
+import { processProfilePhotoPath } from "@/Utilities/utilities";
 
 type Props = {
   comment: IComments;
@@ -44,19 +50,24 @@ export const Comment: React.FC<Props> = ({ comment }) => {
     setLiked(false);
   };
   return (
-    <CommentStyle className="position-relative">
+    <CommentStyle className="position-relative my-1">
       <div className="d-flex justify-content-between align-items-center">
-        <p>
+        <div className="d-inline-flex align-items-center">
           <Link
             to={`/profile/${comment.authorDetails._id}`}
-            className="me-3 text-decoration-none"
+            className="me-3 text-decoration-none d-inline-flex align-items-center gap-2"
           >
+            <Avatar
+              component={"span"}
+              alt={comment.authorDetails.userName}
+              src={processProfilePhotoPath(comment.authorDetails.photo ?? "")}
+            />
             <strong>{comment.authorDetails.userName}</strong>
           </Link>
           <small>
             {timeDifference} {unit} ago
           </small>
-        </p>
+        </div>
         {userid && userid === comment.authorId && (
           <SpeedDial
             ariaLabel="Options"

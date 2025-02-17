@@ -3,7 +3,6 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { HomeCarouselStyle } from "./style";
-import defaultProfilePhoto from "@/assets/profile-user.png";
 import bannerImage from "@/assets/profile-banner-image.jpeg";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -19,6 +18,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css/effect-coverflow";
+import { processProfilePhotoPath } from "@/Utilities/utilities";
 
 type TopUserType = {
   subscriberCount: number;
@@ -97,10 +97,7 @@ export const HomeCarousel: React.FC = () => {
         className="mySwiper"
       >
         {topusers.map((user) => {
-          const imgSrc =
-            user.photo.length > 0
-              ? `${import.meta.env.BLOGPOST_FRONTEND_BACKEND_URL + user.photo}`
-              : defaultProfilePhoto;
+          const imgSrc = processProfilePhotoPath(user.photo);
           return (
             <SwiperSlide key={user._id} className="author-slides p-1">
               <img src={bannerImage} alt={user.userName + "cover photo"} />

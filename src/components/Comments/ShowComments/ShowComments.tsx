@@ -54,7 +54,7 @@ export const ShowComments: React.FC<Props> = ({ postid }) => {
   }, [authToken, postid]);
 
   return (
-    <ShowCommentsStyle>
+    <ShowCommentsStyle className="py-1">
       {isPending ? (
         <CircularProgress />
       ) : comments.length ? (

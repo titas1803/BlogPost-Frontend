@@ -1,5 +1,9 @@
 @use "./styles/fonts.scss";
 
+body.modal-open {
+  padding: 0 !important;
+}
+
 main {
   min-height: 100vh;
   padding: 10px;
@@ -71,4 +75,17 @@ main {
 .updateImageContent {
   background-color: transparent;
   border: 0;
+}
+
+.update-profile-details-modal {
+  max-width: 100vw;
+  margin: auto;
+
+  > .modal-dialog {
+    margin: auto;
+
+    @media (max-width: 767px) {
+      max-width: 95vw;
+    }
+  }
 }

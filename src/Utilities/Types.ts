@@ -44,6 +44,16 @@ export type SignupContextValueType = {
   fromUrl: string | null;
 };
 
+export type ProfileContextValueType = {
+  hasId?: boolean;
+  userDetails?: IFetchedUserDetails;
+  userid?: string;
+  setUserDetails: React.Dispatch<
+    React.SetStateAction<IFetchedUserDetails | undefined>
+  >;
+  setUserId: React.Dispatch<React.SetStateAction<string | undefined>>;
+};
+
 export interface ILoginState {
   loggedIn: boolean;
   loading: boolean;
@@ -64,6 +74,7 @@ export interface IAuthorDetails {
   _id: string;
   name: string;
   userName: string;
+  photo?: string;
 }
 
 export interface IPost {
@@ -96,4 +107,18 @@ export interface ISubscribedToUsers {
   id: string;
   photo: string;
   isSubscribedByLoggedInUser: boolean;
+}
+
+export interface IDetailsFormValues {
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  phone: string;
+  gender: "male" | "female";
+  dob: Date;
+}
+
+export interface IUpdateDetailsValues extends Omit<IDetailsFormValues, "dob"> {
+  dob: string;
 }

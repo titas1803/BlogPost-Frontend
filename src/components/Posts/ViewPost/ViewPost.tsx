@@ -13,8 +13,18 @@ import { AppDispatch, AppState } from "@/store/store";
 import { logout } from "@/slices/loginSlice";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { deletePost, socket, updatePost } from "@/Utilities/utilities";
-import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
+import {
+  deletePost,
+  processProfilePhotoPath,
+  socket,
+  updatePost,
+} from "@/Utilities/utilities";
+import {
+  Avatar,
+  SpeedDial,
+  SpeedDialAction,
+  SpeedDialIcon,
+} from "@mui/material";
 import { IoIosOptions, IoIosSend } from "react-icons/io";
 
 type Props = {
@@ -129,17 +139,27 @@ export const ViewPost: React.FC<Props> = ({ post }) => {
               <article>
                 <section>
                   <div className="d-flex justify-content-between">
-                    <div className="userdetails">
-                      <p className="mb-0">
-                        <Link to={`/profile/${postToShow.authorDetails._id}`}>
-                          <strong>{postToShow.authorDetails.name}</strong>
-                        </Link>
-                      </p>
-                      <p>
-                        <Link to={`/profile/${postToShow.authorDetails._id}`}>
-                          <small>@{postToShow.authorDetails.userName}</small>
-                        </Link>
-                      </p>
+                    <div className="userdetails d-flex align-items-center gap-2">
+                      <div>
+                        <Avatar
+                          alt={postToShow.authorDetails.userName}
+                          src={processProfilePhotoPath(
+                            postToShow.authorDetails.photo ?? ""
+                          )}
+                        />
+                      </div>
+                      <div>
+                        <p className="mb-0">
+                          <Link to={`/profile/${postToShow.authorDetails._id}`}>
+                            <strong>{postToShow.authorDetails.name}</strong>
+                          </Link>
+                        </p>
+                        <p className="mb-0">
+                          <Link to={`/profile/${postToShow.authorDetails._id}`}>
+                            <small>@{postToShow.authorDetails.userName}</small>
+                          </Link>
+                        </p>
+                      </div>
                     </div>
                     {userid === postToShow.authorId && (
                       <div>

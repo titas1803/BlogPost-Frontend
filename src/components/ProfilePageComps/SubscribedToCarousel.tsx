@@ -4,12 +4,10 @@ import React, { useEffect, useMemo, useState, useTransition } from "react";
 import { useSelector } from "react-redux";
 import { SubscribedList } from "./SubscribedList";
 import { AppState } from "@/store/store";
+import { useProfileContext } from "@/hooks/profileCtxHook";
 
-type Props = {
-  userid?: string;
-};
-
-export const SubscribedToCarousel: React.FC<Props> = ({ userid }) => {
+export const SubscribedToCarousel: React.FC = () => {
+  const { userid } = useProfileContext();
   const [listOfSubscribedTo, setListOfSubscribedTo] =
     useState<ISubscribedToUsers[]>();
 
@@ -49,7 +47,7 @@ export const SubscribedToCarousel: React.FC<Props> = ({ userid }) => {
       fetchSubscribedTo();
     });
     return () => {
-      source.cancel();
+      source.cancel("subscriber cancel");
     };
   }, [authToken, profileId]);
 

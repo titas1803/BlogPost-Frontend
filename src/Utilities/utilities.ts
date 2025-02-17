@@ -2,6 +2,9 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
+import defaultProfilePhoto from "@/assets/profile-user.png";
+import { UseFormSetError } from "react-hook-form";
+import { IDetailsFormValues, IUpdateDetailsValues } from "./Types";
 
 export const getCookie = (name: string) => {
   return Cookies.get(name);
@@ -42,9 +45,53 @@ export const verifyAuthToken = async (token?: string) => {
   }
 };
 
+const usernameAvailabilityApiCall = async (
+  username: string,
+  setError?: UseFormSetError<IDetailsFormValues>,
+  allowedValue?: string
+) => {
+  if (username === allowedValue) return true;
+  const isAvailable = await axios
+    .get(
+      import.meta.env.BLOGPOST_FRONTEND_API_URL +
+        "/user/username-available/" +
+        username
+    )
+    .then((res) => (res.status === 200 ? res.data.available : false))
+    .catch(() => {
+      return false;
+    });
+  if (!isAvailable && setError)
+    setError("username", {
+      type: "notAvailable",
+      message: "Username not available. Please choose something else",
+    });
+  return isAvailable;
+};
+
+const usernameAvailabilityCheck = async (delay = 1000) => {
+  let timeOut: NodeJS.Timeout;
+  return async (
+    username: string,
+    setError?: UseFormSetError<IDetailsFormValues | IUpdateDetailsValues>,
+    allowedValue?: string
+  ) => {
+    clearTimeout(timeOut);
+    if (username && username.length > 4) {
+      timeOut = setTimeout(async () => {
+        await usernameAvailabilityApiCall(username, setError, allowedValue);
+      }, delay);
+    }
+  };
+};
+
+export const usernameInputDebounce = await usernameAvailabilityCheck();
+
 export const processPhotoPath = (path: string): string => {
   if (path && path.length > 0) {
-    return import.meta.env.BLOGPOST_FRONTEND_BACKEND_URL + path;
+    return (
+      import.meta.env.BLOGPOST_FRONTEND_BACKEND_URL + path.replaceAll("\\", "/")
+    );
   } else {
     return path;
   }
@@ -55,7 +102,7 @@ export const processProfilePhotoPath = (path: string): string => {
   if (processedpath && processedpath.length > 0) {
     return processedpath;
   }
-  return "/src/assets/profile-user.png";
+  return defaultProfilePhoto;
 };
 
 export const updateProfileImage = async (

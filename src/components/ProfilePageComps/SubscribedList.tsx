@@ -1,11 +1,11 @@
 import { ISubscribedToUsers } from "@/Utilities/Types";
 import React, { useMemo, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import defaultProfilePhoto from "@/assets/profile-user.png";
 import { Link } from "react-router-dom";
 import { SubscibedUserListStyle } from "./style";
 import { useSubscribe, useUnSubscribe } from "@/hooks/subscribeHooks";
 import toast from "react-hot-toast";
+import { processProfilePhotoPath } from "@/Utilities/utilities";
 
 type Props = {
   user: ISubscribedToUsers;
@@ -17,9 +17,7 @@ export const SubscribedList: React.FC<Props> = ({ user }) => {
   const subscribe = useSubscribe();
   const unSubscribe = useUnSubscribe();
   const profilePhoto = useMemo(() => {
-    const photo = user.photo
-      ? `${import.meta.env.BLOGPOST_FRONTEND_BACKEND_URL}${user.photo}`
-      : defaultProfilePhoto;
+    const photo = processProfilePhotoPath(user.photo);
     return photo;
   }, [user.photo]);
 
