@@ -148,14 +148,20 @@ export const ViewPost: React.FC<Props> = ({ post }) => {
                           )}
                         />
                       </div>
-                      <div>
+                      <div className="user-details-links">
                         <p className="mb-0">
-                          <Link to={`/profile/${postToShow.authorDetails._id}`}>
+                          <Link
+                            to={`/profile/${postToShow.authorDetails._id}`}
+                            className="text-decoration-none"
+                          >
                             <strong>{postToShow.authorDetails.name}</strong>
                           </Link>
                         </p>
                         <p className="mb-0">
-                          <Link to={`/profile/${postToShow.authorDetails._id}`}>
+                          <Link
+                            to={`/profile/${postToShow.authorDetails._id}`}
+                            className="text-decoration-none"
+                          >
                             <small>@{postToShow.authorDetails.userName}</small>
                           </Link>
                         </p>
@@ -240,7 +246,6 @@ export const ViewPost: React.FC<Props> = ({ post }) => {
                 </div>
               </article>
               <section>
-                <div>comments</div>
                 <AddComment postid={postToShow._id} />
                 {showComments && <ShowComments postid={postToShow._id} />}
               </section>

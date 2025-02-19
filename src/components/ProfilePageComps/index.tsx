@@ -1,6 +1,6 @@
 import { ProfilePageStyle } from "@/pages/ProfilePage/style";
 import React, { useEffect, useTransition } from "react";
-import { LoadingModal } from "../LoadingModal";
+import { LoadingModal } from "../Loading";
 import { ProfileCard } from "./ProfileCard";
 import { ProfilePageBanner } from "./ProfilePageBanner";
 import { SubscribedToCarousel } from "./SubscribedToCarousel";
@@ -71,9 +71,8 @@ const ProfilePage: React.FC = () => {
 
   return (
     <ProfilePageStyle className="profile-page br-10 p-2 p-md-3">
-      {isPending ? (
-        <LoadingModal show message="Loading.." />
-      ) : !userDetails ? (
+      {isPending && <LoadingModal show message="Loading.." />}
+      {!userDetails ? (
         <p>404. Details not found.</p>
       ) : (
         <>

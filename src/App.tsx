@@ -12,40 +12,45 @@ import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { Container } from "react-bootstrap";
 import { Search } from "./pages/Search";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
     <ThemeProvider theme={SiteTheme}>
-      <Provider store={store}>
-        <Router>
-          <Header />
-          <main>
-            <Container id="page-container">
-              <Routes>
-                <Route element={<ProtectedRoute />}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/profile" element={<ProfilePage />} />
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <Router>
+            <Header />
+            <main>
+              <Container id="page-container">
+                <Routes>
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route
+                      path="/profile/:userid"
+                      element={<ProfilePage hasId />}
+                    />
+                  </Route>
                   <Route
-                    path="/profile/:userid"
-                    element={<ProfilePage hasId />}
+                    path="/login"
+                    element={<LoginOrSignup activePath="login" />}
                   />
-                </Route>
-                <Route
-                  path="/login"
-                  element={<LoginOrSignup activePath="login" />}
-                />
-                <Route
-                  path="/signup"
-                  element={<LoginOrSignup activePath="signup" />}
-                />
-                <Route path="/search" element={<Search />} />
-                <Route path="/not-allowed" element={<NotAllowed />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Container>
-          </main>
-        </Router>
-      </Provider>
+                  <Route
+                    path="/signup"
+                    element={<LoginOrSignup activePath="signup" />}
+                  />
+                  <Route path="/search" element={<Search />} />
+                  <Route path="/not-allowed" element={<NotAllowed />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Container>
+            </main>
+          </Router>
+        </Provider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

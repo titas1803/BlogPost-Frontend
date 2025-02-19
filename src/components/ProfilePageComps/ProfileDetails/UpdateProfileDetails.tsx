@@ -118,8 +118,6 @@ export const UpdateProfileDetails: React.FC<Props> = ({
   };
 
   const onSubmit = async (data: IUpdateDetailsValues) => {
-    console.log(data);
-
     const formData = {
       name: data.firstName + " " + data.lastName,
       userName: data.username,
@@ -136,7 +134,6 @@ export const UpdateProfileDetails: React.FC<Props> = ({
           },
         });
         if (response.status === 200) {
-          console.log(response.data.user);
           toast.success("user details updated successfully");
         }
       } catch {

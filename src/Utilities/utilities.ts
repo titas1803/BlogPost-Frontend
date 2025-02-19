@@ -124,7 +124,6 @@ export const updateProfileImage = async (
 };
 
 export const deletePost = async (postid: string, authToken: string) => {
-  console.log("post deleted");
   const DELETEURL =
     import.meta.env.BLOGPOST_FRONTEND_API_URL + `/post/${postid}`;
   try {
@@ -158,7 +157,6 @@ export const updatePost = async (
     | FormData,
   authToken: string
 ) => {
-  console.log("post updated");
   const UPDATEURL =
     import.meta.env.BLOGPOST_FRONTEND_API_URL + `/post/${postid}`;
   try {

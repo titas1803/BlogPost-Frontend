@@ -9,7 +9,7 @@ import { LuEyeClosed } from "react-icons/lu";
 import { useSignUpContext, useViewPassword } from "@/hooks";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { LoadingModal } from "@components/LoadingModal";
+import { LoadingModal } from "@/components/Loading";
 import axios from "axios";
 import { passwordRegex } from "@/Utilities/constants";
 import toast from "react-hot-toast";

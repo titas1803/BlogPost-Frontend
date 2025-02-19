@@ -1,15 +1,8 @@
-import React, {
-  ChangeEvent,
-  KeyboardEvent,
-  Suspense,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, KeyboardEvent, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SearchPageStyle } from "./styles";
 import { Button, FormControl, InputGroup } from "react-bootstrap";
 import { SearchResult } from "@/components/SearchComps";
-import { LoadingModal } from "@/components/LoadingModal";
 import { FaSearch } from "react-icons/fa";
 
 export const Search: React.FC = () => {
@@ -84,11 +77,7 @@ export const Search: React.FC = () => {
         </Button>
       </InputGroup>
       {fieldError.hasError && <small>{fieldError.errorMessage}</small>}
-      {finalSearchKeyword && (
-        <Suspense fallback={<LoadingModal show message="Searching..." />}>
-          <SearchResult keyword={finalSearchKeyword} />
-        </Suspense>
-      )}
+      {finalSearchKeyword && <SearchResult keyword={finalSearchKeyword} />}
     </SearchPageStyle>
   );
 };

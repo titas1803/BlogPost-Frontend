@@ -31,7 +31,11 @@ export const HomeCarouselStyle = styled.div`
 
         a {
           color: white;
-          font-family: ${(props) => props.theme.fonts.robotoItalic};
+          font-family: ${(props) => props.theme.fonts.robotoRegular};
+
+          &.username {
+            font-family: ${(props) => props.theme.fonts.robotoItalic};
+          }
         }
       }
 

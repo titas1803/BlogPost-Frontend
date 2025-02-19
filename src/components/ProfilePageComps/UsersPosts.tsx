@@ -1,37 +1,69 @@
 import { IPost } from "@/Utilities/Types";
 import axios from "axios";
-import React, { useEffect, useMemo, useState, useTransition } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { LoadingModal } from "../LoadingModal";
 import { ListOfPosts } from "../Posts";
 import { Button } from "react-bootstrap";
 import { AddPostModal } from "../Posts/AddPost/AddPostModal";
 import { AppState } from "@/store/store";
 import { socket } from "@/Utilities/utilities";
 import { useProfileContext } from "@/hooks/profileCtxHook";
+import { useQuery } from "@tanstack/react-query";
+import { LoadingCircle } from "../Loading";
+
+const fetchPosts = async (
+  profileUserId: string,
+  authToken: string
+): Promise<IPost[]> => {
+  const response = await axios.get(
+    import.meta.env.BLOGPOST_FRONTEND_API_URL +
+      "/post/getallposts/" +
+      profileUserId,
+    {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    }
+  );
+  const posts: IPost[] = response.data.posts;
+  return posts;
+};
 
 export const UsersPosts: React.FC = () => {
   const { userid } = useProfileContext();
   const [showAddModal, setShowModal] = useState(false);
-  const [postsFound, setPostsFound] = useState<IPost[]>();
   const { userid: loggedInUserId, "auth-token": authToken } = useSelector(
     (state: AppState) => state.login
   );
-  const [isPending, startTransition] = useTransition();
 
   const profileUserId = useMemo(() => {
     return userid ?? loggedInUserId;
   }, [loggedInUserId, userid]);
 
+  const {
+    data: postsFound,
+    isError,
+    isLoading,
+  } = useQuery({
+    queryKey: ["posts", profileUserId, authToken],
+    queryFn: async () => fetchPosts(profileUserId!, authToken!),
+  });
+
+  const [posts, setPosts] = useState<IPost[]>([]);
+
+  useEffect(() => {
+    if (!isLoading && !isError) setPosts(postsFound ?? []);
+  }, [isError, isLoading, postsFound]);
+
   useEffect(() => {
     // Listen for new posts in this profile room
     socket.on("new_post", (newPost: IPost) => {
-      setPostsFound((prevPosts) => [newPost, ...(prevPosts ?? [])]);
+      setPosts((prevPosts) => [newPost, ...(prevPosts ?? [])]);
     });
 
     // Listen for new posts in this profile room
     socket.on("update_post_inprofile", (updatedPost) => {
-      setPostsFound((prevPosts) => {
+      setPosts((prevPosts) => {
         const updatedPostsArray = prevPosts?.map((post) =>
           post._id === updatedPost._id ? updatedPost : post
         );
@@ -41,7 +73,7 @@ export const UsersPosts: React.FC = () => {
 
     // Listen for new posts in this profile room
     socket.on("delete_post_inprofile", (deletedPostId: string) => {
-      setPostsFound((prevPosts) =>
+      setPosts((prevPosts) =>
         prevPosts?.filter((post) => post._id !== deletedPostId)
       );
     });
@@ -53,42 +85,11 @@ export const UsersPosts: React.FC = () => {
     };
   }, [profileUserId]);
 
-  useEffect(() => {
-    const source = axios.CancelToken.source();
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get(
-          import.meta.env.BLOGPOST_FRONTEND_API_URL +
-            "/post/getallposts/" +
-            profileUserId,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-            cancelToken: source.token,
-          }
-        );
-        const posts: IPost[] = response.data.posts;
-        setPostsFound(posts);
-      } catch {
-        setPostsFound(undefined);
-      }
-    };
-    startTransition(() => {
-      fetchPosts();
-    });
-    return () => {
-      source.cancel();
-    };
-  }, [authToken, profileUserId]);
-
   const onModalHide = () => setShowModal(false);
 
   return (
     <>
-      {isPending ? (
-        <LoadingModal show message="Posts loading" />
-      ) : (
+      {
         <>
           <div className="d-flex justify-content-between w-100">
             <h3 className="px-4">
@@ -108,13 +109,15 @@ export const UsersPosts: React.FC = () => {
           </div>
           <AddPostModal show={showAddModal} onHide={onModalHide} />
           <hr />
-          {postsFound && postsFound.length ? (
-            <ListOfPosts listOfPosts={postsFound} />
+          <LoadingCircle isLoading={isLoading} />
+          {posts && posts.length ? (
+            <ListOfPosts listOfPosts={posts} />
           ) : (
             <div>No Post found</div>
           )}
+          {isError && <div>Some Error occured. Please refresh the page.</div>}
         </>
-      )}
+      }
     </>
   );
 };

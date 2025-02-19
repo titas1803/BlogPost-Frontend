@@ -3,6 +3,19 @@ import styled from "styled-components";
 export const ViewPostStyles = styled.div`
   background-color: #fff;
 
+  .userdetails {
+    .user-details-links {
+      a {
+        font-family: ${(props) => props.theme.fonts.robotoRegular};
+        color: ${(props) => props.theme.color.darkTeal};
+
+        small {
+          font-family: ${(props) => props.theme.fonts.robotoItalic};
+        }
+      }
+    }
+  }
+
   .post-speeddial-icon-fab {
     background-color: transparent;
     padding: 0;
