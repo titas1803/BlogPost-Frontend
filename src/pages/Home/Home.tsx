@@ -37,18 +37,19 @@ export const Home: React.FC = () => {
   const {
     data: post,
     isError,
-    isLoading,
+    isFetching,
   } = useQuery({
     queryKey: ["homeposts", authToken],
     queryFn: verifyAuthAndFetch,
+    retry: 1,
   });
 
   return (
     <HomeStyle className="mx-auto">
       <HomeAddPost />
       <HomeCarousel />
-      <LoadingCircle isLoading={isLoading} />
-      {post ? <ViewPost post={post} /> : !isLoading && <p>No post found</p>}
+      <LoadingCircle isFetching={isFetching} />
+      {post ? <ViewPost post={post} /> : !isFetching && <p>No post found</p>}
       {isError && <p>Error occurred. Please reload.</p>}
     </HomeStyle>
   );

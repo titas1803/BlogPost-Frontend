@@ -26,16 +26,16 @@ export const PostSearchResult: React.FC<Props> = ({ keyword }) => {
   const {
     data: postSearchResult,
     isError,
-    isLoading,
+    isFetching,
   } = useQuery({
     queryKey: ["searchposts", keyword],
     queryFn: async () => searchPost(keyword),
-    retry: false,
+    retry: 1,
   });
 
   return (
     <div className="result">
-      <LoadingCircle isLoading={isLoading} />
+      <LoadingCircle isFetching={isFetching} />
       {isError && <p>No result found. Please refine your search</p>}
       {postSearchResult && <ListOfPosts listOfPosts={postSearchResult} />}
     </div>

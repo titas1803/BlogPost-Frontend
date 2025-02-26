@@ -43,15 +43,16 @@ export const ShowComments: React.FC<Props> = ({ postid }) => {
   const {
     data: comments,
     isError,
-    isLoading,
+    isFetching,
   } = useQuery({
     queryKey: ["comments", postid, authToken],
     queryFn: verifyAuthTokenAndFetch,
+    retry: 1,
   });
 
   return (
     <ShowCommentsStyle className="py-1">
-      <LoadingCircle isLoading={isLoading} />
+      <LoadingCircle isFetching={isFetching} />
       {!isError && comments && comments.length ? (
         <>
           <div>comments</div>

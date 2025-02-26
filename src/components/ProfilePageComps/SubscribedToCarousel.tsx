@@ -41,15 +41,16 @@ export const SubscribedToCarousel: React.FC = () => {
   const {
     data: listOfSubscribedTo,
     isError,
-    isLoading,
+    isFetching,
   } = useQuery({
     queryKey: ["subscribedto", profileId, authToken],
     queryFn: async () => fetchSubscribedTo(profileId!, userid!, authToken!),
+    retry: 1,
   });
 
   return (
     <>
-      <LoadingCircle isLoading={isLoading} />
+      <LoadingCircle isFetching={isFetching} />
       {!isError && listOfSubscribedTo && listOfSubscribedTo.length > 0 && (
         <div className="d-flex px-3">
           {listOfSubscribedTo.map((author) => (

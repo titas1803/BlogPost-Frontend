@@ -13,12 +13,14 @@ import { store } from "./store/store";
 import { Container } from "react-bootstrap";
 import { Search } from "./pages/Search";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <ThemeProvider theme={SiteTheme}>
+      <Toaster />
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
           <Router>

@@ -6,6 +6,10 @@ import { UpdateProfileDetails } from "./UpdateProfileDetails";
 import { useProfileContext } from "@/hooks/profileCtxHook";
 import { socket } from "@/Utilities/utilities";
 import { IFetchedUserDetails } from "@/Utilities/Types";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, AppState } from "@/store/store";
+import { logout } from "@/slices/loginSlice";
+import toast from "react-hot-toast";
 
 type Props = {
   className?: string;
@@ -14,9 +18,18 @@ type Props = {
 export const ProfileDetails: React.FC<Props> = ({ className = "" }) => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const { userDetails, setUserDetails } = useProfileContext();
+  const { userid } = useSelector((state: AppState) => state.login);
+  const dispatch = useDispatch<AppDispatch>();
   const copyUserName = () => {
     navigator.clipboard.writeText(userDetails!.userName);
+    toast("username copied!");
   };
+
+  const sameUser = useMemo(() => {
+    if (userDetails?._id && userid) {
+      return userDetails?._id === userid;
+    }
+  }, [userDetails?._id, userid]);
 
   const dob = useMemo(() => {
     const dobObject = new Date(userDetails!.dob);
@@ -24,6 +37,10 @@ export const ProfileDetails: React.FC<Props> = ({ className = "" }) => {
 
     return dob;
   }, [userDetails]);
+
+  useEffect(() => {
+    if (!userid) dispatch(logout());
+  }, [dispatch, userid]);
 
   useEffect(() => {
     socket.on("update_details", (newDetails: IFetchedUserDetails) => {
@@ -68,20 +85,22 @@ export const ProfileDetails: React.FC<Props> = ({ className = "" }) => {
           </p>
         </div>
       </div>
-      <div className="p-3">
-        <IconButton
-          aria-label="Edit"
-          title="Edit details"
-          onClick={() => setShowUpdateModal(true)}
-        >
-          <FaUserEdit fill="#046e94" />
-        </IconButton>
+      {sameUser && (
+        <div className="p-3">
+          <IconButton
+            aria-label="Edit"
+            title="Edit details"
+            onClick={() => setShowUpdateModal(true)}
+          >
+            <FaUserEdit fill="#046e94" />
+          </IconButton>
 
-        <UpdateProfileDetails
-          show={showUpdateModal}
-          setShow={setShowUpdateModal}
-        />
-      </div>
+          <UpdateProfileDetails
+            show={showUpdateModal}
+            setShow={setShowUpdateModal}
+          />
+        </div>
+      )}
     </Stack>
   );
 };

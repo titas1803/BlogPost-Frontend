@@ -17,14 +17,27 @@ import { AppState } from "@/store/store";
 import { Button } from "react-bootstrap";
 import { FaThumbsUp } from "react-icons/fa";
 import { processProfilePhotoPath } from "@/Utilities/utilities";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { EditComment } from "./EditComment";
 
 type Props = {
   comment: IComments;
 };
+
 export const Comment: React.FC<Props> = ({ comment }) => {
-  const { userid } = useSelector((state: AppState) => state.login);
+  const { userid, "auth-token": authToken } = useSelector(
+    (state: AppState) => state.login
+  );
+  const [showEdit, setShowEdit] = useState(false);
+
+  const [commentText, setCommentText] = useState<string>(comment.commentText);
   const [liked, setLiked] = useState<boolean>(
     userid ? comment.likedBy.includes(userid) : false
+  );
+
+  const [likedByLength, setLikedByLength] = useState<number>(
+    comment.likedBy.length
   );
 
   const { timeDifference, unit } = useMemo(() => {
@@ -42,13 +55,50 @@ export const Comment: React.FC<Props> = ({ comment }) => {
     return { timeDifference, unit };
   }, [comment.createdAt]);
 
-  const likeAComment = () => {
+  const likeAComment = async () => {
     setLiked(true);
+    try {
+      const response = await axios.put(
+        import.meta.env.BLOGPOST_FRONTEND_API_URL +
+          `/comment/${comment._id}/like`,
+        undefined,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setLikedByLength(response.data.likeCount);
+      }
+    } catch {
+      toast("Some error occured");
+      setLiked(false);
+    }
   };
 
-  const unLikeAComment = () => {
+  const unLikeAComment = async () => {
     setLiked(false);
+    try {
+      const response = await axios.put(
+        import.meta.env.BLOGPOST_FRONTEND_API_URL +
+          `/comment/${comment._id}/unlike`,
+        undefined,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setLikedByLength(response.data.likeCount);
+      }
+    } catch {
+      toast("Some error occured");
+      setLiked(true);
+    }
   };
+
   return (
     <CommentStyle className="position-relative my-1">
       <div className="d-flex justify-content-between align-items-center">
@@ -86,7 +136,7 @@ export const Comment: React.FC<Props> = ({ comment }) => {
               icon={<MdOutlineModeEdit />}
               tooltipTitle={"Edit"}
               onClick={() => {
-                console.log("edit", comment._id);
+                setShowEdit(true);
               }}
             />
             <SpeedDialAction
@@ -99,7 +149,17 @@ export const Comment: React.FC<Props> = ({ comment }) => {
           </SpeedDial>
         )}
       </div>
-      <p>{comment.commentText}</p>
+      <div>
+        {showEdit ? (
+          <EditComment
+            commentText={commentText}
+            setCommentText={setCommentText}
+            setShowEdit={setShowEdit}
+          />
+        ) : (
+          <p>{commentText}</p>
+        )}
+      </div>
       <div className="d-flex justify-content-start">
         <div>
           <Button
@@ -108,7 +168,7 @@ export const Comment: React.FC<Props> = ({ comment }) => {
           >
             {liked ? <FaThumbsUp color="blue" /> : <SlLike fill="blue" />}
           </Button>{" "}
-          <span>liked by {comment.likedBy.length} people</span>
+          <span>liked by {likedByLength} people</span>
         </div>
       </div>
     </CommentStyle>

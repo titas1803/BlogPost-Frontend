@@ -49,16 +49,16 @@ export const UserSearchResult: React.FC<Props> = ({ keyword }) => {
   const {
     data: userSearchResult,
     isError,
-    isLoading,
+    isFetching,
   } = useQuery({
     queryKey: ["searchusers", keyword, loggedIn, authToken],
     queryFn: async () => searchUser(keyword, loggedIn, authToken),
-    retry: 0,
+    retry: 1,
   });
 
   return (
     <div className="result">
-      <LoadingCircle isLoading={isLoading} />
+      <LoadingCircle isFetching={isFetching} />
       {isError && <p>No result found. Please refine your search</p>}
       {userSearchResult?.map((user, index) => {
         return (

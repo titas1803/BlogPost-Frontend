@@ -43,17 +43,18 @@ export const UsersPosts: React.FC = () => {
   const {
     data: postsFound,
     isError,
-    isLoading,
+    isFetching,
   } = useQuery({
     queryKey: ["posts", profileUserId, authToken],
     queryFn: async () => fetchPosts(profileUserId!, authToken!),
+    retry: 1,
   });
 
   const [posts, setPosts] = useState<IPost[]>([]);
 
   useEffect(() => {
-    if (!isLoading && !isError) setPosts(postsFound ?? []);
-  }, [isError, isLoading, postsFound]);
+    if (!isFetching && !isError) setPosts(postsFound ?? []);
+  }, [isError, isFetching, postsFound]);
 
   useEffect(() => {
     // Listen for new posts in this profile room
@@ -109,13 +110,12 @@ export const UsersPosts: React.FC = () => {
           </div>
           <AddPostModal show={showAddModal} onHide={onModalHide} />
           <hr />
-          <LoadingCircle isLoading={isLoading} />
+          <LoadingCircle isFetching={isFetching} />
           {posts && posts.length ? (
             <ListOfPosts listOfPosts={posts} />
           ) : (
             <div>No Post found</div>
           )}
-          {isError && <div>Some Error occured. Please refresh the page.</div>}
         </>
       }
     </>

@@ -98,7 +98,7 @@ export const UpdateProfileDetails: React.FC<Props> = ({
     register,
     handleSubmit,
     setError,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<IUpdateDetailsValues>({
     mode: "all",
     reValidateMode: "onBlur",
@@ -135,6 +135,7 @@ export const UpdateProfileDetails: React.FC<Props> = ({
         });
         if (response.status === 200) {
           toast.success("user details updated successfully");
+          setShow(false);
         }
       } catch {
         toast.error("Error occured, please try again");
@@ -274,6 +275,7 @@ export const UpdateProfileDetails: React.FC<Props> = ({
             loadingPosition="end"
             variant="contained"
             className="mt-4"
+            disabled={!isDirty}
           >
             Update
           </Button>

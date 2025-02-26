@@ -59,7 +59,7 @@ const ProfilePage: React.FC = () => {
   }, [authToken, userid, dispatch, hasId, loggedInUserDetails, setUserDetails]);
 
   useEffect(() => {
-    setUserId(userid);
+    setUserId(userid ?? loggedInUserDetails._id);
     // Join the profile room when visiting a user's profile
     if (userid) {
       socket.emit("join_profile", userid);
@@ -67,7 +67,7 @@ const ProfilePage: React.FC = () => {
     return () => {
       socket.emit("leave_profile", userid);
     };
-  }, [setUserId, userid]);
+  }, [loggedInUserDetails._id, setUserId, userid]);
 
   return (
     <ProfilePageStyle className="profile-page br-10 p-2 p-md-3">

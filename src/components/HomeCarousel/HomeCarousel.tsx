@@ -58,15 +58,16 @@ export const HomeCarousel: React.FC = () => {
   const {
     data: topusers,
     isError,
-    isLoading,
+    isFetching,
   } = useQuery({
     queryKey: ["topusers", authToken!],
     queryFn: async () => fetchTopUser(authToken as string),
+    retry: 1,
   });
 
   return (
     <>
-      <LoadingCircle isLoading={isLoading} />
+      <LoadingCircle isFetching={isFetching} />
       {!isError && topusers && topusers.length > 0 ? (
         <HomeCarouselStyle className="my-3">
           <h3>Top authors</h3>

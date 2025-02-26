@@ -3,7 +3,7 @@ import { AppDispatch, AppState } from "@/store/store";
 import axios from "axios";
 import React, { useMemo, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { AiOutlineDelete } from "react-icons/ai";
 import { RiImageEditLine } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
@@ -60,7 +60,6 @@ export const ProfileImage: React.FC<Props> = ({ image, alt, userId }) => {
 
   return (
     <>
-      <Toaster />
       <Button
         onClick={showModal}
         className="p-0 m-0 border-0 profile-image-modal"

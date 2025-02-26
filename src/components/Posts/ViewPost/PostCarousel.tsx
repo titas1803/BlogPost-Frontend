@@ -11,7 +11,14 @@ export const PostCarousel: React.FC<Props> = React.memo(
   ({ className, images }) => {
     return images.length ? (
       <ImageCarousel className="w-100">
-        <Carousel interval={null} className={`${className}`} fade slide={false}>
+        <Carousel
+          interval={null}
+          className={`${className}`}
+          fade
+          slide={false}
+          controls={images.length > 1}
+          indicators={images.length > 1}
+        >
           {images.map((image, index) => (
             <Carousel.Item key={index}>
               <img src={processPhotoPath(image)} alt={`blogimage-${index}`} />
