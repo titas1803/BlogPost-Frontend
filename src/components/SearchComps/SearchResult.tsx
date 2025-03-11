@@ -50,7 +50,10 @@ export const SearchResult: React.FC<Props> = ({ keyword }) => {
               activeSection !== "PEOPLE" ? "d-none" : ""
             }`}
           >
-            <UserSearchResult keyword={keyword} />
+            <UserSearchResult
+              keyword={keyword}
+              setActiveSection={setActiveSection}
+            />
           </div>
         )}
         <div

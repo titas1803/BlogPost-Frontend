@@ -10,14 +10,18 @@ const initialState: IUserState = {
   isFetched: false,
   name: "",
   userName: "",
+  bio: "",
   email: "",
   phone: "",
   photo: "",
   gender: "",
   dob: "",
   role: "USER",
-  noOfSubscribers: 0,
-  noOfSubscriberedTo: 0,
+  noOfSubscribers: {
+    authorId: "",
+    subscribedBy: [],
+    subscribedTo: [],
+  },
 };
 
 const userApiUrl = `${import.meta.env.BLOGPOST_FRONTEND_API_URL}/user/`;

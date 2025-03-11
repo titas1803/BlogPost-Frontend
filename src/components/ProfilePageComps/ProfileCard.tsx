@@ -19,7 +19,7 @@ export const ProfileCard: React.FC = () => {
   }, [userDetails?.photo]);
 
   return (
-    <ProfileCardStyle className="profile-card py-2 px-3 position-relative">
+    <ProfileCardStyle className="profile-card py-2 py-md-3 px-3 px-md-0 position-relative mx-md-auto">
       <div className="profile-photo mx-3 mx-md-auto position-relative">
         <div className="img-div">
           <ProfileImage

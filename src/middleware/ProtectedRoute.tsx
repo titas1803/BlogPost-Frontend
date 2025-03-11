@@ -6,10 +6,30 @@ import axios from "axios";
 import { AppDispatch, AppState } from "@/store/store";
 import { logout } from "@/slices/loginSlice";
 import { getCookie } from "@/Utilities/utilities";
+import toast from "react-hot-toast";
+import { useQuery } from "@tanstack/react-query";
 
 type Props = {
   requiredRole?: "ADMIN" | "USER";
 };
+
+const verifyToken = async (userid: string | undefined) => {
+  const TOKENVERIFYURL =
+    import.meta.env.BLOGPOST_FRONTEND_API_URL + "/jwt/verify";
+
+  if (!getCookie("auth-token")) throw new Error();
+  const response = await axios.get(TOKENVERIFYURL, {
+    headers: {
+      Authorization: `Bearer ${getCookie("auth-token")}`,
+    },
+  });
+
+  if (response.status === 200 && response.data.userid === userid) {
+    return true;
+  }
+  return false;
+};
+
 export const ProtectedRoute: React.FC<Props> = ({ requiredRole = "USER" }) => {
   const [verified, setVerified] = useState(true);
   const location = useLocation();
@@ -22,31 +42,23 @@ export const ProtectedRoute: React.FC<Props> = ({ requiredRole = "USER" }) => {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  useEffect(() => {
-    const verifyToken = async () => {
-      const TOKENVERIFYURL =
-        import.meta.env.BLOGPOST_FRONTEND_API_URL + "/jwt/verify";
+  const { data, isError, isFetching } = useQuery({
+    queryKey: [userid],
+    queryFn: async () => verifyToken(userid),
+    enabled: !!userid,
+  });
 
-      try {
-        const response = await axios.get(TOKENVERIFYURL, {
-          headers: {
-            Authorization: `Bearer ${getCookie("auth-token")}`,
-          },
-        });
-        if (response.status === 200 && response.data.userid === userid) {
-          setVerified(true);
-        } else {
-          setVerified(false);
-          dispatch(logout());
-        }
-      } catch {
-        setVerified(false);
-        dispatch(logout());
-      }
-    };
-    if (getCookie("auth-token")) verifyToken();
-    else setVerified(false);
-  }, [dispatch, userid, location.pathname]);
+  useEffect(() => {
+    if (!isFetching && data) {
+      setVerified(data);
+    } else if (isError) {
+      console.log("in Error");
+      dispatch(logout());
+      toast.remove();
+      toast.error("Please login");
+      setVerified(false);
+    }
+  }, [data, dispatch, isError, isFetching]);
 
   if (!loggedIn || !verified) {
     return (

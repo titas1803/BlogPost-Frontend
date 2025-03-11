@@ -12,6 +12,7 @@ export type UserDetailsType = {
 
 export interface IFetchedUserDetails {
   _id: string;
+  bio: string;
   name: string;
   userName: string;
   email: string;
@@ -20,8 +21,11 @@ export interface IFetchedUserDetails {
   gender: string;
   dob: string;
   role: "USER" | "ADMIN";
-  noOfSubscribers: number;
-  noOfSubscriberedTo: number;
+  noOfSubscribers: {
+    authorId: string;
+    subscribedBy: string[];
+    subscribedTo: string[];
+  };
 }
 
 export interface IUserState extends IFetchedUserDetails {

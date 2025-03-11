@@ -71,7 +71,7 @@ export const Search: React.FC = () => {
           variant="outline-light"
           onClick={searchButtonClick}
           disabled={fieldError.hasError}
-          className="d-flex align-itms-center"
+          className="d-flex align-items-center"
         >
           <FaSearch fill="white" />
         </Button>

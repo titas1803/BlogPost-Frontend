@@ -21,7 +21,11 @@ export const ProfileCardStyle = styled.div`
   top: -50px;
 
   @media ${(props) => props.theme.device.md} {
+    border: 4px solid ${(props) => props.theme.color.borderGray};
+    border-radius: 15px;
+    box-shadow: 2px 2px 11px 2px rgba(92, 91, 92, 1);
     top: -63px;
+    background-color: rgba(255, 255, 255, 0.75);
   }
 
   .profile-photo {
@@ -29,7 +33,7 @@ export const ProfileCardStyle = styled.div`
 
     .img-div {
       background-color: #fff;
-      border: 4px solid #c8c8c8;
+      border: 4px solid #a6a6a6;
       border-radius: 50%;
       width: max-content;
 

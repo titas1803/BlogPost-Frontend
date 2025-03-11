@@ -24,3 +24,12 @@ export const HeaderSearchStyle = styled.div`
     border: 1px solid black;
   }
 `;
+
+export const UserSearchResultStyle = styled.div`
+  a {
+    &.user-details-links {
+      font-family: ${(props) => props.theme.fonts.robotoRegular};
+      color: ${(props) => props.theme.color.darkTeal};
+    }
+  }
+`;

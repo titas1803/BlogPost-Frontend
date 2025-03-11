@@ -2,11 +2,12 @@ import React, { useEffect, useMemo } from "react";
 import BannerImage from "@/assets/profile-banner-image.jpeg";
 import { ProfilePageBannerStyle } from "./style";
 import { IconButton, Tooltip } from "@mui/material";
-import { CiEdit, CiImageOn } from "react-icons/ci";
+import { CiImageOn } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "@/store/store";
 import { logout } from "@/slices/loginSlice";
 import { useProfileContext } from "@/hooks/profileCtxHook";
+import { UpdateProfileBio } from "./UpdateProfileBio";
 
 type Props = {
   bannerImage?: string;
@@ -14,7 +15,7 @@ type Props = {
 export const ProfilePageBanner: React.FC<Props> = ({
   bannerImage = BannerImage,
 }) => {
-  const { userid } = useProfileContext();
+  const { userid, userDetails } = useProfileContext();
   const { userid: loggedIsUseId, "auth-token": authToken } = useSelector(
     (state: AppState) => state.login
   );
@@ -32,21 +33,10 @@ export const ProfilePageBanner: React.FC<Props> = ({
   return (
     <ProfilePageBannerStyle className="position-relative">
       <img src={bannerImage} alt="cover image" />
+      <p>{userDetails?.bio ?? ""}</p>
       {isSameUser && (
         <div className="btn-section position-absolute">
-          <Tooltip title="Update bio">
-            <IconButton
-              aria-label="update bio"
-              className="edit-bio"
-              sx={{
-                backgroundColor: "rgba(255, 255, 255, 0.5)",
-                padding: "4px",
-                margin: "3px 5px",
-              }}
-            >
-              <CiEdit />
-            </IconButton>
-          </Tooltip>
+          <UpdateProfileBio />
           <Tooltip title="update cover photo">
             <IconButton
               aria-label="Update cover photo"

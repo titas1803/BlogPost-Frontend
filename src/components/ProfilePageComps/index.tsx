@@ -71,16 +71,17 @@ const ProfilePage: React.FC = () => {
 
   return (
     <ProfilePageStyle className="profile-page br-10 p-2 p-md-3">
-      {isPending && <LoadingModal show message="Loading.." />}
-      {!userDetails ? (
-        <p>404. Details not found.</p>
-      ) : (
+      {isPending ? (
+        <LoadingModal show message="Loading.." />
+      ) : userDetails ? (
         <>
           <ProfilePageBanner />
           <ProfileCard />
           <SubscribedToCarousel />
           <UsersPosts />
         </>
+      ) : (
+        <p>404. Details not found.</p>
       )}
     </ProfilePageStyle>
   );

@@ -65,23 +65,23 @@ export const ProfileDetails: React.FC<Props> = ({ className = "" }) => {
         </div>
         <div className="profle-noOfSubs">
           <p className="mb-0">
+            Subscribers:{" "}
             <span className="noOfSubs-text">
-              {userDetails!.noOfSubscribers}
+              {userDetails!.noOfSubscribers.subscribedBy.length}
             </span>{" "}
-            Subscribers
           </p>
         </div>
         <div className="profle-noOfSubTo">
           <p className="mb-0">
-            Subscribed to{" "}
+            Subscribed to:{" "}
             <span className="noOfSubTo-text">
-              {userDetails!.noOfSubscriberedTo}
+              {userDetails!.noOfSubscribers.subscribedTo.length}
             </span>
           </p>
         </div>
         <div className="profile-dob">
           <p className="mb-0">
-            Date of birth: <span className="dob-text">{dob}</span>
+            Date of birth: <strong className="dob-text">{dob}</strong>
           </p>
         </div>
       </div>

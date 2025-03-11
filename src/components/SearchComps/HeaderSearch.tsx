@@ -14,10 +14,10 @@ export const HeaderSearch: React.FC = () => {
     }
   };
   return (
-    <HeaderSearchStyle className="me-0 me-lg-3 mb-2 mb-lg-0">
+    <HeaderSearchStyle className="me-0 me-lg-3 mb-0">
       <InputGroup className="searchbox">
         <Form.Control
-          type="text"
+          type="search"
           placeholder="Search for persons or post"
           aria-label="Search"
           aria-describedby="search-label"
