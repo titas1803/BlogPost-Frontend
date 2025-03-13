@@ -5,7 +5,6 @@ import { HeaderStyle } from "./styles";
 import { HeaderSearch } from "@/components/SearchComps";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { IoMdLogOut } from "react-icons/io";
 import { logout } from "@/slices/loginSlice";
 import { AppState } from "@/store/store";
 import {
@@ -21,6 +20,8 @@ import {
 } from "@mui/material";
 import { processProfilePhotoPath } from "@/Utilities/utilities";
 import { FaUser } from "react-icons/fa";
+import { IoArrowForwardCircleOutline } from "react-icons/io5";
+import { IoMdLogOut } from "react-icons/io";
 
 export const Header: React.FC = () => {
   const { loggedIn, username } = useSelector((state: AppState) => state.login);
@@ -57,7 +58,7 @@ export const Header: React.FC = () => {
   return (
     <HeaderStyle>
       <Navbar expand="lg" className="bg-body-tertiary py-2">
-        <Container>
+        <Container className="position-relative">
           <Navbar.Brand>
             <Link to="/">
               <img src={logo} alt="BlogPost logo" />
@@ -70,7 +71,15 @@ export const Header: React.FC = () => {
                   <HeaderSearch />
                 </Nav.Item>
                 <Nav.Item className="text-end">
-                  <IconButton aria-label="options" onClick={toggleDrawer(true)}>
+                  <IconButton
+                    aria-label="options"
+                    onClick={toggleDrawer(true)}
+                    sx={{
+                      position: { xs: "absolute", md: "static" },
+                      top: "10px",
+                      right: "10px",
+                    }}
+                  >
                     <Avatar
                       alt={username}
                       src={processProfilePhotoPath(photo)}
@@ -82,6 +91,16 @@ export const Header: React.FC = () => {
                     onClose={toggleDrawer(false)}
                   >
                     <List sx={{ width: 250 }}>
+                      <ListItem disablePadding divider>
+                        <ListItemButton
+                          onClick={toggleDrawer(false)}
+                          sx={{ width: "20%", fontSize: "1.5em" }}
+                        >
+                          <ListItemIcon>
+                            <IoArrowForwardCircleOutline color="black" />
+                          </ListItemIcon>
+                        </ListItemButton>
+                      </ListItem>
                       <ListItem disablePadding divider>
                         <ListItemButton>
                           <ListItemAvatar>

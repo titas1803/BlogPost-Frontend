@@ -88,6 +88,7 @@ export const UpdateProfileBio: React.FC = () => {
               autoCapitalize="sentences"
               onChange={inputChange}
               autoComplete="off"
+              slotProps={{ htmlInput: { maxLength: 70 } }}
             />
             {bioValue.length > 0 && (
               <IconButton

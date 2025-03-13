@@ -18,6 +18,11 @@ export const SearchResultStyle = styled.div`
 export const HeaderSearchStyle = styled.div`
   input {
     border: 1px solid black;
+    width: 60% !important;
+
+    @media ${(props) => props.theme.device.md} {
+      width: 25vw !important;
+    }
   }
 
   #search-label {

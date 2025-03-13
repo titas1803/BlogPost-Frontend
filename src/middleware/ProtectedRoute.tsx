@@ -46,6 +46,7 @@ export const ProtectedRoute: React.FC<Props> = ({ requiredRole = "USER" }) => {
     queryKey: [userid],
     queryFn: async () => verifyToken(userid),
     enabled: !!userid,
+    retry: 1,
   });
 
   useEffect(() => {

@@ -1,12 +1,27 @@
 import styled from "styled-components";
 
-export const ProfilePageBannerStyle = styled.div`
-  img {
-    max-width: 100%;
-    aspect-ratio: 2;
+export const ProfilePageBannerStyle = styled.div<{ $bgImage: string }>`
+  background: url(${(props) => props.$bgImage}) center/cover;
+  border-radius: 10px;
+  max-width: 100%;
+
+  aspect-ratio: 1.5;
+
+  @media ${(props) => props.theme.device.md} {
+    aspect-ratio: 4;
+  }
+
+  .profile-bio {
+    font: normal 600 22px/24px ${(props) => props.theme.fonts.robotoRegular};
+    height: 80%;
+    width: 75%;
+    align-content: center;
+    letter-spacing: normal;
 
     @media ${(props) => props.theme.device.md} {
-      aspect-ratio: 4;
+      width: 65%;
+      font-size: 35px;
+      line-height: 40px;
     }
   }
 

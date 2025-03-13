@@ -31,9 +31,11 @@ export const ProfilePageBanner: React.FC<Props> = ({
   }, [loggedIsUseId, authToken, disatch]);
 
   return (
-    <ProfilePageBannerStyle className="position-relative">
-      <img src={bannerImage} alt="cover image" />
-      <p>{userDetails?.bio ?? ""}</p>
+    <ProfilePageBannerStyle
+      className="position-relative"
+      $bgImage={bannerImage}
+    >
+      <p className="profile-bio ms-2 ms-md-3">{userDetails?.bio ?? ""}</p>
       {isSameUser && (
         <div className="btn-section position-absolute">
           <UpdateProfileBio />

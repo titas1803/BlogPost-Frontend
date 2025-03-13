@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { AddPostStyles } from "./styles";
 import { Button } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { processProfilePhotoPath } from "@/Utilities/utilities";
-import { fetchInitialuserDetails } from "@/slices/userSlice";
-import { AppDispatch, AppState } from "@/store/store";
+import { AppState } from "@/store/store";
 import { AddPostModal } from "./AddPostModal";
 
 export const HomeAddPost: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [userPhoto, setUserPhoto] = useState<string>("");
-  const dispatch = useDispatch<AppDispatch>();
 
   const { username } = useSelector((state: AppState) => state.login);
 
@@ -22,8 +20,7 @@ export const HomeAddPost: React.FC = () => {
       setUserPhoto(processProfilePhotoPath(photo));
       return;
     }
-    dispatch(fetchInitialuserDetails());
-  }, [dispatch, isFetched, photo]);
+  }, [isFetched, photo]);
 
   const modalShow = () => {
     setShowModal(true);

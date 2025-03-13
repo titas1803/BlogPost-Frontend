@@ -28,7 +28,7 @@ const userApiUrl = `${import.meta.env.BLOGPOST_FRONTEND_API_URL}/user/`;
 
 export const fetchInitialuserDetails = createAsyncThunk(
   "fetchInitialUser",
-  async (_, { getState, rejectWithValue }) => {
+  async (_, { getState }) => {
     try {
       const state = getState() as {
         login: { loggedIn: boolean; "auth-token"?: string };
@@ -41,11 +41,12 @@ export const fetchInitialuserDetails = createAsyncThunk(
         });
         return response.data;
       }
+      throw new Error("Not Loggedin");
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        return rejectWithValue(error.response.data);
+        throw new Error(error.response.data);
       }
-      return rejectWithValue((error as Error).message);
+      throw new Error("Error occured");
     }
   }
 );

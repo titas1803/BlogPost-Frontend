@@ -9,6 +9,7 @@ import { HomeCarousel } from "@/components/HomeCarousel";
 import { useQuery } from "@tanstack/react-query";
 import { logout } from "@/slices/loginSlice";
 import { LoadingCircle } from "@/components/Loading";
+import { Helmet } from "react-helmet-async";
 
 const fetchAPost = async (authToken: string): Promise<IPost> => {
   const response = await axios.get(
@@ -45,12 +46,26 @@ export const Home: React.FC = () => {
   });
 
   return (
-    <HomeStyle className="mx-auto">
-      <HomeAddPost />
-      <HomeCarousel />
-      <LoadingCircle isFetching={isFetching} />
-      {post ? <ViewPost post={post} /> : !isFetching && <p>No post found</p>}
-      {isError && <p>Error occurred. Please reload.</p>}
-    </HomeStyle>
+    <>
+      <Helmet>
+        <title>BlogPost | Post your mind</title>
+        <meta
+          name="description"
+          content="BlogPost is a small social media site where you can share your thoughts, experience and opinios to other"
+        />
+        <meta property="og:title" content="BlogPost | Post your mind" />
+        <meta
+          property="og:description"
+          content="BlogPost is a small social media site where you can share your thoughts, experience and opinios to other"
+        />
+      </Helmet>
+      <HomeStyle className="mx-auto">
+        <HomeAddPost />
+        <HomeCarousel />
+        <LoadingCircle isFetching={isFetching} />
+        {post ? <ViewPost post={post} /> : !isFetching && <p>No post found</p>}
+        {isError && <p>Error occurred. Please reload.</p>}
+      </HomeStyle>
+    </>
   );
 };

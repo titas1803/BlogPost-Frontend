@@ -1,11 +1,10 @@
 import { ProfilePageStyle } from "@/pages/ProfilePage/style";
-import React, { useEffect, useTransition } from "react";
-import { LoadingModal } from "../Loading";
+import React, { useEffect, useState, useTransition } from "react";
+import { LoadingCircle } from "../Loading";
 import { ProfileCard } from "./ProfileCard";
 import { ProfilePageBanner } from "./ProfilePageBanner";
 import { SubscribedToCarousel } from "./SubscribedToCarousel";
 import { UsersPosts } from "./UsersPosts";
-import { fetchInitialuserDetails } from "@/slices/userSlice";
 import { AppDispatch, AppState } from "@/store/store";
 import { IUserState } from "@/Utilities/Types";
 import { socket } from "@/Utilities/utilities";
@@ -13,12 +12,14 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useProfileContext } from "@/hooks/profileCtxHook";
+import { Helmet } from "react-helmet-async";
 
 const ProfilePage: React.FC = () => {
   const { hasId, userDetails, setUserDetails, setUserId } = useProfileContext();
   const { userid } = useParams<{ userid?: string }>();
   const dispatch = useDispatch<AppDispatch>();
   const [isPending, startTransition] = useTransition();
+  const [isError, setIsError] = useState(false);
 
   const authToken = useSelector((state: AppState) => state.login["auth-token"]);
   const loggedInUserDetails = useSelector(
@@ -37,19 +38,20 @@ const ProfilePage: React.FC = () => {
           }
         );
         setUserDetails(response.data.success ? response.data.user : undefined);
+        setIsError(false);
       } catch {
+        setIsError(true);
         setUserDetails(undefined);
       }
     };
     startTransition(() => {
       if (!hasId && loggedInUserDetails.isFetched) {
+        setIsError(false);
         setUserDetails(loggedInUserDetails);
         return;
       }
       if (hasId) {
         fetchUserDetails();
-      } else if (!loggedInUserDetails.isFetched) {
-        dispatch(fetchInitialuserDetails());
       }
     });
 
@@ -70,20 +72,35 @@ const ProfilePage: React.FC = () => {
   }, [loggedInUserDetails._id, setUserId, userid]);
 
   return (
-    <ProfilePageStyle className="profile-page br-10 p-2 p-md-3">
-      {isPending ? (
-        <LoadingModal show message="Loading.." />
-      ) : userDetails ? (
-        <>
-          <ProfilePageBanner />
-          <ProfileCard />
-          <SubscribedToCarousel />
-          <UsersPosts />
-        </>
-      ) : (
-        <p>404. Details not found.</p>
-      )}
-    </ProfilePageStyle>
+    <>
+      <Helmet>
+        <title>BlogPost Author | {userDetails?.name ?? "Not found"}</title>
+        <meta
+          name="description"
+          content={`View details about ${userDetails?.name}`}
+        />
+        <meta
+          property="og:title"
+          content={`BlogPost Author | ${userDetails?.name ?? "Not found"}`}
+        />
+        <meta
+          property="og:description"
+          content={`View details about ${userDetails?.name}`}
+        />
+      </Helmet>
+      <ProfilePageStyle className="profile-page br-10 p-2 p-md-3">
+        <LoadingCircle isFetching={isPending} />
+        {userDetails !== undefined && (
+          <>
+            <ProfilePageBanner />
+            <ProfileCard />
+            <SubscribedToCarousel />
+            <UsersPosts />
+          </>
+        )}
+        {isError && <p>404 User not found</p>}
+      </ProfilePageStyle>
+    </>
   );
 };
 
