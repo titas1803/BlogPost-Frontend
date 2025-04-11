@@ -1,50 +1,67 @@
-# React + TypeScript + Vite
+# BlogPost Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend application for the BlogPost project, built using the MERN (MongoDB, Express, React, Node.js) stack. The frontend is responsible for providing a user-friendly interface for interacting with the blog platform.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- User authentication (login/register)
+- Create, edit, and delete blog posts
+- View a list of all blog posts
+- Responsive design for various screen sizes
 
-## Expanding the ESLint configuration
+## Technologies Used
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **React**: Frontend library for building the user interface
+- **Axios**: For making HTTP requests to the backend API
+- **React Router**: For handling navigation and routing
+- **CSS/SCSS**: For styling the application
 
-- Configure the top-level `parserOptions` property like this:
+## Prerequisites
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+Before running this project, ensure you have the following installed:
+
+- Node.js (v14 or later)
+- npm or yarn
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/titas1803/BlogPost-Frontend.git
+cd blogpost-frontend
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+2. Install dependencies:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+npm install
 ```
+
+3. Start the development server:
+
+```bash
+npm start
+```
+
+4. Open your browser and navigate to `http://localhost:3000`.
+
+## Folder Structure
+
+```
+/src
+  /components    # Reusable React components
+  /pages         # Application pages
+  /services      # API service functions
+  /styles        # Global and component-specific styles
+  /utils         # Utility functions
+```
+
+## Backend Integration
+
+This frontend application interacts with the BlogPost backend API. Make sure the backend server is running and update the API base URL in the configuration file if necessary.
+_Backend sourcecode:_ `https://github.com/titas1803/BlogPost-backend.git`
+
+## Contributing
+
+Contributions are welcome! Please fork the repository and submit a pull request.
